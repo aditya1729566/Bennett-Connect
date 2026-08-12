@@ -1,0 +1,180 @@
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { InterestBadge } from "@/components/InterestBadge";
+import { PageShell } from "@/components/PageShell";
+import { PendingSubmitButton } from "@/components/PendingSubmitButton";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { getProfileByUsername } from "@/lib/data/profiles";
+import { createClient, requireUser } from "@/lib/supabase/server";
+
+async function connect(formData: FormData) {
+  "use server";
+
+  const user = await requireUser();
+  const receiverId = String(formData.get("receiver_id") ?? "");
+  const username = String(formData.get("username") ?? "");
+  const supabase = await createClient();
+
+  if (receiverId && receiverId !== user.id) {
+    await supabase.from("connection_requests").insert({
+      sender_id: user.id,
+      receiver_id: receiverId,
+      status: "pending",
+    });
+  }
+
+  redirect(`/profile/${username}`);
+}
+
+async function block(formData: FormData) {
+  "use server";
+
+  const user = await requireUser();
+  const receiverId = String(formData.get("receiver_id") ?? "");
+  const username = String(formData.get("username") ?? "");
+  const supabase = await createClient();
+
+  if (receiverId && receiverId !== user.id) {
+    const { count } = await supabase
+      .from("connection_requests")
+      .update({ status: "blocked" }, { count: "exact" })
+      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id})`);
+
+    if (!count) {
+      await supabase.from("connection_requests").insert({
+        sender_id: user.id,
+        receiver_id: receiverId,
+        status: "blocked",
+      });
+    }
+  }
+
+  revalidatePath("/discover");
+  redirect(`/profile/${username}`);
+}
+
+async function reportProfile(formData: FormData) {
+  "use server";
+
+  const user = await requireUser();
+  const reportedUserId = String(formData.get("reported_user_id") ?? "");
+  const username = String(formData.get("username") ?? "");
+  const reason = String(formData.get("reason") ?? "other");
+  const details = String(formData.get("details") ?? "").trim() || null;
+  const supabase = await createClient();
+
+  if (reportedUserId && reportedUserId !== user.id) {
+    await supabase.from("reports").insert({
+      reporter_id: user.id,
+      reported_user_id: reportedUserId,
+      reason,
+      details,
+    });
+  }
+
+  redirect(`/profile/${username}?reported=1`);
+}
+
+export default async function ProfilePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ username: string }>;
+  searchParams?: Promise<{ reported?: string }>;
+}) {
+  const user = await requireUser();
+  const { username } = await params;
+  const query = await searchParams;
+  const supabase = await createClient();
+  const profile = await getProfileByUsername(supabase, username);
+
+  if (!profile) {
+    notFound();
+  }
+
+  const isOwnProfile = profile.id === user.id;
+
+  return (
+    <PageShell>
+      <main className="mx-auto max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
+        {query?.reported ? <p className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">Report received. Thank you for keeping campus safe.</p> : null}
+
+        <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+            <ProfileAvatar src={profile.avatar_url} name={profile.full_name} size="lg" />
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">{profile.university_name ?? "Campus profile"}</p>
+              <h1 className="mt-2 break-words text-3xl font-black leading-tight text-zinc-950 sm:text-4xl">{profile.full_name}</h1>
+              <p className="mt-2 text-sm font-semibold text-zinc-500">@{profile.username}</p>
+              <p className="mt-3 text-sm leading-6 text-zinc-700 sm:text-base">{[profile.course, profile.year_of_study ?? profile.graduation_year, profile.hostel].filter(Boolean).join(" • ")}</p>
+              {profile.bio ? <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-zinc-700 sm:text-base">{profile.bio}</p> : null}
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-5 sm:grid-cols-2">
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-wide text-zinc-500">Interests</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {profile.interests.length > 0 ? profile.interests.map((interest) => <InterestBadge key={interest.id}>{interest.name}</InterestBadge>) : <p className="text-sm text-zinc-500">No interests added yet.</p>}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-sm font-black uppercase tracking-wide text-zinc-500">Goals</h2>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {profile.goals.length > 0 ? profile.goals.map((goal) => <InterestBadge key={goal.id} tone="goal">{goal.title}</InterestBadge>) : <p className="text-sm text-zinc-500">No goals added yet.</p>}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap gap-3 text-sm font-black">
+            {profile.github_url ? <Link href={profile.github_url} className="rounded-full border border-zinc-300 px-4 py-2">GitHub</Link> : null}
+            {profile.linkedin_url ? <Link href={profile.linkedin_url} className="rounded-full border border-zinc-300 px-4 py-2">LinkedIn</Link> : null}
+            {profile.codeforces_handle ? <span className="rounded-full border border-zinc-300 px-4 py-2">Codeforces: {profile.codeforces_handle}</span> : null}
+          </div>
+
+          {!isOwnProfile ? (
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <form action={connect}>
+                <input type="hidden" name="receiver_id" value={profile.id} />
+                <input type="hidden" name="username" value={profile.username} />
+                <PendingSubmitButton pendingLabel="Sending..." className="w-full">
+                  Connect
+                </PendingSubmitButton>
+              </form>
+              <form action={block}>
+                <input type="hidden" name="receiver_id" value={profile.id} />
+                <input type="hidden" name="username" value={profile.username} />
+                <PendingSubmitButton variant="light" pendingLabel="Blocking..." className="w-full">
+                  Block
+                </PendingSubmitButton>
+              </form>
+            </div>
+          ) : null}
+        </section>
+
+        {!isOwnProfile ? (
+          <form action={reportProfile} className="mt-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+            <h2 className="text-lg font-black text-zinc-950">Report profile</h2>
+            <input type="hidden" name="reported_user_id" value={profile.id} />
+            <input type="hidden" name="username" value={profile.username} />
+            <div className="mt-3 grid gap-3 sm:grid-cols-[180px_1fr_auto]">
+              <select name="reason" className="rounded-lg border border-zinc-300 px-3 py-3 text-sm font-semibold">
+                <option value="spam">Spam</option>
+                <option value="harassment">Harassment</option>
+                <option value="impersonation">Impersonation</option>
+                <option value="inappropriate">Inappropriate</option>
+                <option value="scam">Scam</option>
+                <option value="other">Other</option>
+              </select>
+              <input name="details" placeholder="Optional details" className="rounded-lg border border-zinc-300 px-3 py-3 text-sm" />
+              <PendingSubmitButton variant="light" pendingLabel="Reporting...">
+                Report
+              </PendingSubmitButton>
+            </div>
+          </form>
+        ) : null}
+      </main>
+    </PageShell>
+  );
+}

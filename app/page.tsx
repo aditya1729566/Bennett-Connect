@@ -1,69 +1,116 @@
-import Image from "next/image";
+import Link from "next/link";
+import { PageShell } from "@/components/PageShell";
+import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { getProfileByUsername } from "@/lib/data/profiles";
+import { createClient, getUser } from "@/lib/supabase/server";
 
-export default function Home() {
+const FEATURED_USERNAME = "anarchistgoverner";
+const FEATURED_WEBSITE = "https://personal-website-bay-omega.vercel.app";
+const FALLBACK_FEATURED_PROFILE = {
+  full_name: "Aditya Agrawal",
+  avatar_url: null,
+  course: "CSE",
+  year_of_study: "First Year",
+  graduation_year: 2030,
+  bio: "I am not here to fit into the campus. I am here to build the thing everyone talks about next.",
+  github_url: "https://github.com/aditya1729566",
+  linkedin_url: "https://www.linkedin.com/in/aditya-agrawal-367337288/",
+};
+
+export default async function Home() {
+  const user = await getUser();
+  const featuredProfile = await getProfileByUsername(await createClient(), FEATURED_USERNAME);
+  const previewName = featuredProfile?.full_name ?? FALLBACK_FEATURED_PROFILE.full_name;
+  const previewMeta = [featuredProfile?.course ?? FALLBACK_FEATURED_PROFILE.course, featuredProfile?.year_of_study ?? featuredProfile?.graduation_year ?? FALLBACK_FEATURED_PROFILE.year_of_study]
+    .filter(Boolean)
+    .join(" • ");
+  const previewBio =
+    featuredProfile?.bio?.replace(`to know more about me go to - ${FEATURED_WEBSITE}`, FALLBACK_FEATURED_PROFILE.bio) ??
+    FALLBACK_FEATURED_PROFILE.bio;
+  const previewTags =
+    featuredProfile && (featuredProfile.interests.length > 0 || featuredProfile.goals.length > 0 || featuredProfile.skills.length > 0)
+      ? [
+          ...featuredProfile.interests.slice(0, 2).map((interest) => interest.name),
+          ...featuredProfile.goals.slice(0, 2).map((goal) => goal.title),
+          ...featuredProfile.skills.slice(0, 1).map((skill) => skill.name),
+        ]
+      : ["Web Development", "Codeforces", "Campus products"];
+  const profileHref = `/profile/${FEATURED_USERNAME}`;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <PageShell>
+      <main className="mx-auto grid min-h-[calc(100vh-56px)] max-w-6xl items-center gap-6 px-3 py-6 sm:px-4 sm:py-10 md:min-h-[calc(100vh-64px)] md:grid-cols-[1fr_0.9fr] md:gap-10 md:py-16">
+        <section>
+          <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Bennett campus beta</p>
+          <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.04] text-zinc-950 sm:text-6xl">
+            Find the people on campus you should know.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-700 sm:mt-5 sm:text-lg sm:leading-8">
+            Meet students who share your interests, goals, skills, and ambitions. Start with the 10 people who are most useful to know, not an endless feed.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row">
+            <Link href={user ? "/discover" : "/signup"} className="pressable rounded-full bg-zinc-950 px-6 py-3 text-center text-sm font-black text-white shadow-sm hover:bg-zinc-800">
+              {user ? "Open Discover" : "Join your campus"}
+            </Link>
+            <Link href={profileHref} className="pressable rounded-full border border-zinc-300 bg-white px-6 py-3 text-center text-sm font-black text-zinc-900 shadow-sm hover:border-zinc-400">
+              Meet Aditya
+            </Link>
+          </div>
+          <div className="mt-6 grid gap-3 text-sm text-zinc-700 sm:mt-10 sm:grid-cols-3">
+            <div className="interactive-card rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+              <p className="font-black text-zinc-950">Discovery first</p>
+              <p className="mt-1">Recommendations explain why someone is worth meeting.</p>
+            </div>
+            <div className="interactive-card rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+              <p className="font-black text-zinc-950">Campus trust</p>
+              <p className="mt-1">Built around verified university profiles and privacy.</p>
+            </div>
+            <div className="interactive-card rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+              <p className="font-black text-zinc-950">Useful requests</p>
+              <p className="mt-1">Find teammates, practice partners, builders, and collaborators.</p>
+            </div>
+          </div>
+        </section>
+
+        <div className="interactive-card rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm sm:p-5">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-zinc-200 bg-gradient-to-br from-white via-cyan-50/70 to-emerald-50/80 p-5 text-zinc-950">
+            <div className="absolute inset-x-5 top-16 h-px bg-zinc-200/80" />
+            <div className="absolute inset-y-5 left-16 w-px bg-zinc-200/80" />
+            <div className="flex items-center justify-between">
+              <span className="rounded-full border border-cyan-200 bg-white/70 px-3 py-1 text-xs font-black uppercase tracking-wide text-cyan-800">Featured profile</span>
+              <span className="text-xs font-semibold text-zinc-500">Discover</span>
+            </div>
+            <div className="mt-14 sm:mt-20">
+              <ProfileAvatar src={featuredProfile?.avatar_url ?? FALLBACK_FEATURED_PROFILE.avatar_url} name={previewName} size="lg" />
+            </div>
+            <h2 className="mt-6 text-2xl font-black sm:text-3xl">{previewName}</h2>
+            <p className="mt-1 text-sm font-semibold text-zinc-600">{previewMeta}</p>
+            <p className="mt-4 text-base leading-7 text-zinc-700">{previewBio}</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <a href={FEATURED_WEBSITE} target="_blank" rel="noreferrer" className="pressable rounded-full bg-zinc-950 px-3 py-2 text-xs font-black text-white shadow-sm hover:bg-zinc-800">
+                Visit website
+              </a>
+              <Link href={profileHref} className="pressable rounded-full border border-zinc-300 bg-white px-3 py-2 text-xs font-black text-zinc-900 shadow-sm hover:border-zinc-400">
+                Open profile
+              </Link>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {previewTags.slice(0, 5).map((item) => (
+                <span key={item} className="rounded-full border border-zinc-200 bg-white/75 px-3 py-1 text-xs font-bold text-zinc-800">
+                  {item}
+                </span>
+              ))}
+            </div>
+            <div className="mt-8 rounded-lg border border-zinc-200 bg-white p-4 text-zinc-900 shadow-sm">
+              <p className="text-xs font-black uppercase text-zinc-500">Why</p>
+              <p className="mt-2 text-sm leading-6">This is a real Bennett Connect profile. Students can open it, see the campus signal, and connect after joining.</p>
+            </div>
+            <Link href={profileHref} className="pressable absolute bottom-5 right-5 rounded-full bg-emerald-500 px-3 py-2 text-xs font-black text-white shadow-lg hover:bg-emerald-600">
+              View profile
+            </Link>
+          </div>
         </div>
       </main>
-    </div>
+    </PageShell>
   );
 }
