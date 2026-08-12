@@ -58,11 +58,34 @@ export default async function SignupPage({ searchParams }: { searchParams?: Prom
 
   return (
     <PageShell>
-      <main className="mx-auto flex min-h-[calc(100vh-64px)] max-w-md flex-col justify-center px-4 py-10">
-        <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+      <main className="mx-auto grid min-h-[calc(100svh-56px)] w-full max-w-6xl px-0 sm:min-h-[calc(100vh-64px)] sm:px-4 sm:py-10 lg:grid-cols-[1fr_440px] lg:items-center lg:gap-10">
+        <section className="hidden lg:block">
           <p className="text-sm font-black uppercase tracking-wide text-cyan-700">Campus beta</p>
-          <h1 className="mt-2 text-3xl font-black text-zinc-950">Join your campus</h1>
-          <p className="mt-2 text-sm leading-6 text-zinc-600">Create an account with your university email and finish your profile in under two minutes.</p>
+          <h1 className="mt-3 max-w-xl text-5xl font-black leading-tight text-zinc-950">Find the students you should know before everyone else does.</h1>
+          <p className="mt-5 max-w-lg text-lg leading-8 text-zinc-700">Start with Outlook, finish a quick profile, and let Bennett Connect recommend people around your goals, skills, and interests.</p>
+          <div className="mt-8 max-w-xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Mobile-first setup</p>
+            <div className="mt-4 grid grid-cols-3 gap-3 text-sm font-bold text-zinc-700">
+              <span className="rounded-xl bg-cyan-50 p-3 text-cyan-800">Outlook</span>
+              <span className="rounded-xl bg-emerald-50 p-3 text-emerald-800">Profile</span>
+              <span className="rounded-xl bg-orange-50 p-3 text-orange-800">Discover</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="flex min-h-[calc(100svh-56px)] flex-col bg-white px-5 py-6 sm:min-h-0 sm:rounded-2xl sm:border sm:border-zinc-200 sm:p-6 sm:shadow-sm">
+          <div className="sm:hidden">
+            <p className="text-xs font-black uppercase tracking-wide text-cyan-700">Bennett Connect</p>
+            <h1 className="mt-3 text-4xl font-black leading-tight text-zinc-950">Join campus.</h1>
+            <p className="mt-3 text-base leading-7 text-zinc-600">Use your Bennett Outlook account and finish your profile in under two minutes.</p>
+          </div>
+
+          <div className="hidden sm:block">
+            <p className="text-sm font-black uppercase tracking-wide text-cyan-700">Campus beta</p>
+            <h1 className="mt-2 text-3xl font-black text-zinc-950">Join your campus</h1>
+            <p className="mt-2 text-sm leading-6 text-zinc-600">Create an account with your university email and finish your profile in under two minutes.</p>
+          </div>
+
           <div className="mt-5">
             <SetupNotice />
           </div>
@@ -70,7 +93,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: Prom
           <div className="mt-6">
             <MicrosoftSignInButton errorPath="/signup" />
           </div>
-          <div className="my-5 flex items-center gap-3">
+          <div className="my-6 flex items-center gap-3 sm:my-5">
             <div className="h-px flex-1 bg-zinc-200" />
             <span className="text-xs font-black uppercase tracking-wide text-zinc-400">or create password</span>
             <div className="h-px flex-1 bg-zinc-200" />
@@ -78,20 +101,20 @@ export default async function SignupPage({ searchParams }: { searchParams?: Prom
           <form action={signup} className="space-y-4">
             <label className="block text-sm font-bold text-zinc-700">
               University email
-              <input name="email" type="email" required className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="email" type="email" required className="mt-2 min-h-12 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Password
-              <input name="password" type="password" minLength={8} required className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="password" type="password" minLength={8} required className="mt-2 min-h-12 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
-            <PendingSubmitButton pendingLabel="Creating account..." className="w-full">
+            <PendingSubmitButton pendingLabel="Creating account..." className="min-h-14 w-full text-base sm:min-h-0 sm:text-sm">
               Create account
             </PendingSubmitButton>
           </form>
-          <p className="mt-5 text-center text-sm font-semibold text-zinc-600">
+          <p className="mt-auto pt-8 text-center text-sm font-semibold text-zinc-600 sm:mt-5 sm:pt-0">
             Already joined? <Link href="/login">Log in</Link>
           </p>
-        </div>
+        </section>
       </main>
     </PageShell>
   );

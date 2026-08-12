@@ -49,8 +49,8 @@ export function MicrosoftSignInButton({ errorPath }: MicrosoftSignInButtonProps)
   return (
     <form action={signInWithMicrosoft}>
       <input type="hidden" name="error_path" value={errorPath} />
-      <PendingSubmitButton variant="light" pendingLabel="Opening Outlook..." className="w-full gap-2 border-cyan-200 bg-cyan-50 text-cyan-900 hover:border-cyan-300 hover:bg-cyan-100">
-        <span className="inline-flex h-5 w-5 items-center justify-center rounded bg-[#0078d4] text-xs font-black text-white">M</span>
+      <PendingSubmitButton variant="light" pendingLabel="Opening Outlook..." className="min-h-14 w-full gap-2 border-cyan-200 bg-cyan-50 text-base text-cyan-900 hover:border-cyan-300 hover:bg-cyan-100 sm:min-h-0 sm:text-sm">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[#0078d4] text-sm font-black text-white sm:h-5 sm:w-5 sm:rounded sm:text-xs">M</span>
         Continue with Outlook
       </PendingSubmitButton>
     </form>
