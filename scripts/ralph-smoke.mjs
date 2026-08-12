@@ -18,6 +18,7 @@ const requiredRoutes = [
   "app/page.tsx",
   "app/login/page.tsx",
   "app/signup/page.tsx",
+  "app/auth/callback/route.ts",
   "app/onboarding/page.tsx",
   "app/discover/page.tsx",
   "app/profile/[username]/page.tsx",
@@ -48,6 +49,14 @@ check("landing builds profile link", landing.includes("`/profile/${FEATURED_USER
 check("landing links Aditya website", landing.includes("https://personal-website-bay-omega.vercel.app"));
 check("landing has working profile CTA", landing.includes("View profile"));
 check("landing removed old decorative signal", !landing.includes("connect signal"));
+
+const microsoftButton = read("components/MicrosoftSignInButton.tsx");
+const authCallback = read("app/auth/callback/route.ts");
+check("Outlook login uses Supabase Azure provider", microsoftButton.includes('provider: "azure"'));
+check("Outlook login requests email scope", microsoftButton.includes('scopes: "email"'));
+check("Outlook login has callback route", microsoftButton.includes("/auth/callback?next=/discover"));
+check("OAuth callback exchanges auth code", authCallback.includes("exchangeCodeForSession"));
+check("OAuth callback enforces campus email domain", authCallback.includes("isAllowedCampusEmail"));
 
 const initialMigration = read("supabase/migrations/001_initial_schema.sql");
 for (const table of ["profiles", "connection_requests", "requests", "request_responses", "reports"]) {

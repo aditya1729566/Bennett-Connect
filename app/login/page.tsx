@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
+import { MicrosoftSignInButton } from "@/components/MicrosoftSignInButton";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SetupNotice } from "@/components/SetupNotice";
 import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
@@ -58,7 +59,15 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
             <SetupNotice />
           </div>
           {params?.error ? <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{params.error}</p> : null}
-          <form action={login} className="mt-6 space-y-4">
+          <div className="mt-6">
+            <MicrosoftSignInButton errorPath="/login" />
+          </div>
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-zinc-200" />
+            <span className="text-xs font-black uppercase tracking-wide text-zinc-400">or use password</span>
+            <div className="h-px flex-1 bg-zinc-200" />
+          </div>
+          <form action={login} className="space-y-4">
             <label className="block text-sm font-bold text-zinc-700">
               Email
               <input name="email" type="email" required className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
