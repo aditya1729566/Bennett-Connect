@@ -15,15 +15,22 @@ async function connect(formData: FormData) {
   const receiverId = String(formData.get("receiver_id") ?? "");
   const supabase = await createClient();
 
-  if (receiverId && receiverId !== user.id) {
-    await supabase.from("connection_requests").insert({
-      sender_id: user.id,
-      receiver_id: receiverId,
-      status: "pending",
-    });
+  if (!receiverId || receiverId === user.id) {
+    redirect("/discover?error=Choose%20another%20student%20to%20connect%20with.");
+  }
+
+  const { error } = await supabase.from("connection_requests").insert({
+    sender_id: user.id,
+    receiver_id: receiverId,
+    status: "pending",
+  });
+
+  if (error && error.code !== "23505") {
+    redirect(`/discover?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/discover");
+  redirect("/discover?connected=1");
 }
 
 async function skip(formData: FormData) {
@@ -33,15 +40,23 @@ async function skip(formData: FormData) {
   const skippedUserId = String(formData.get("skipped_user_id") ?? "");
   const supabase = await createClient();
 
-  if (skippedUserId && skippedUserId !== user.id) {
-    await supabase.from("profile_skips").upsert({ user_id: user.id, skipped_user_id: skippedUserId }, { onConflict: "user_id,skipped_user_id" });
+  if (!skippedUserId || skippedUserId === user.id) {
+    redirect("/discover?error=Choose%20another%20student%20to%20skip.");
+  }
+
+  const { error } = await supabase.from("profile_skips").upsert({ user_id: user.id, skipped_user_id: skippedUserId }, { onConflict: "user_id,skipped_user_id" });
+
+  if (error) {
+    redirect(`/discover?error=${encodeURIComponent(error.message)}`);
   }
 
   revalidatePath("/discover");
+  redirect("/discover?skipped=1");
 }
 
-export default async function DiscoverPage() {
+export default async function DiscoverPage({ searchParams }: { searchParams?: Promise<{ connected?: string; skipped?: string; error?: string }> }) {
   const user = await requireUser();
+  const params = await searchParams;
   const supabase = await createClient();
   const currentProfile = await getProfileById(supabase, user.id);
 
@@ -91,6 +106,9 @@ export default async function DiscoverPage() {
         </aside>
 
         <section className="space-y-3 sm:space-y-4">
+          {params?.connected ? <p className="rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">Connection request sent.</p> : null}
+          {params?.skipped ? <p className="rounded-lg bg-cyan-50 p-3 text-sm font-semibold text-cyan-800">Skipped. The next recommendation is ready.</p> : null}
+          {params?.error ? <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{params.error}</p> : null}
           {recommendations.length > 0
             ? recommendations.map((recommendation) => (
                 <ProfileCard

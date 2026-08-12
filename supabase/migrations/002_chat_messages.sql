@@ -11,6 +11,7 @@ create index if not exists chat_messages_connection_created_at_idx
 
 alter table public.chat_messages enable row level security;
 
+drop policy if exists "Accepted connection participants can read chat messages" on public.chat_messages;
 create policy "Accepted connection participants can read chat messages" on public.chat_messages
   for select to authenticated
   using (
@@ -23,6 +24,7 @@ create policy "Accepted connection participants can read chat messages" on publi
     )
   );
 
+drop policy if exists "Accepted connection participants can send chat messages" on public.chat_messages;
 create policy "Accepted connection participants can send chat messages" on public.chat_messages
   for insert to authenticated
   with check (

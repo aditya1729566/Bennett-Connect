@@ -16,15 +16,21 @@ async function connect(formData: FormData) {
   const username = String(formData.get("username") ?? "");
   const supabase = await createClient();
 
-  if (receiverId && receiverId !== user.id) {
-    await supabase.from("connection_requests").insert({
-      sender_id: user.id,
-      receiver_id: receiverId,
-      status: "pending",
-    });
+  if (!receiverId || receiverId === user.id) {
+    redirect(`/profile/${username}?error=Choose%20another%20student%20to%20connect%20with.`);
   }
 
-  redirect(`/profile/${username}`);
+  const { error } = await supabase.from("connection_requests").insert({
+    sender_id: user.id,
+    receiver_id: receiverId,
+    status: "pending",
+  });
+
+  if (error && error.code !== "23505") {
+    redirect(`/profile/${username}?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect(`/profile/${username}?connected=1`);
 }
 
 async function block(formData: FormData) {
@@ -42,16 +48,20 @@ async function block(formData: FormData) {
       .or(`and(sender_id.eq.${user.id},receiver_id.eq.${receiverId}),and(sender_id.eq.${receiverId},receiver_id.eq.${user.id})`);
 
     if (!count) {
-      await supabase.from("connection_requests").insert({
+      const { error } = await supabase.from("connection_requests").insert({
         sender_id: user.id,
         receiver_id: receiverId,
         status: "blocked",
       });
+
+      if (error) {
+        redirect(`/profile/${username}?error=${encodeURIComponent(error.message)}`);
+      }
     }
   }
 
   revalidatePath("/discover");
-  redirect(`/profile/${username}`);
+  redirect(`/profile/${username}?blocked=1`);
 }
 
 async function reportProfile(formData: FormData) {
@@ -81,7 +91,7 @@ export default async function ProfilePage({
   searchParams,
 }: {
   params: Promise<{ username: string }>;
-  searchParams?: Promise<{ reported?: string }>;
+  searchParams?: Promise<{ reported?: string; connected?: string; blocked?: string; error?: string }>;
 }) {
   const user = await requireUser();
   const { username } = await params;
@@ -99,6 +109,9 @@ export default async function ProfilePage({
     <PageShell>
       <main className="mx-auto max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
         {query?.reported ? <p className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">Report received. Thank you for keeping campus safe.</p> : null}
+        {query?.connected ? <p className="mb-4 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">Connection request sent.</p> : null}
+        {query?.blocked ? <p className="mb-4 rounded-lg bg-cyan-50 p-3 text-sm font-semibold text-cyan-800">Profile blocked. They will not appear in discovery.</p> : null}
+        {query?.error ? <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{query.error}</p> : null}
 
         <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start">

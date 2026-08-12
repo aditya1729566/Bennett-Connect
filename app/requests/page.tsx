@@ -47,15 +47,30 @@ async function createRequest(formData: FormData) {
   const user = await requireUser();
   const supabase = await createClient();
   const selectedInterestSlugs = formData.getAll("interests").map(String);
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const expiresAt = String(formData.get("expires_at") ?? "");
+
+  if (title.length < 4 || title.length > 90) {
+    redirect("/requests?error=Use%20a%20request%20title%20between%204%20and%2090%20characters.");
+  }
+
+  if (description.length < 10 || description.length > 1000) {
+    redirect("/requests?error=Use%20a%20description%20between%2010%20and%201000%20characters.");
+  }
+
+  if (expiresAt && new Date(expiresAt).getTime() < Date.now()) {
+    redirect("/requests?error=Pick%20a%20future%20expiry%20time.");
+  }
 
   const { data: request, error } = await supabase
     .from("requests")
     .insert({
       user_id: user.id,
-      title: String(formData.get("title") ?? "").trim(),
-      description: String(formData.get("description") ?? "").trim(),
+      title,
+      description,
       category: String(formData.get("category") ?? "Other"),
-      expires_at: String(formData.get("expires_at") ?? "") || null,
+      expires_at: expiresAt || null,
       status: "active",
     })
     .select("id")
@@ -71,6 +86,7 @@ async function createRequest(formData: FormData) {
   }
 
   revalidatePath("/requests");
+  redirect("/requests?posted=1");
 }
 
 async function respondInterested(formData: FormData) {
@@ -80,8 +96,24 @@ async function respondInterested(formData: FormData) {
   const requestId = Number(formData.get("request_id"));
   const supabase = await createClient();
 
-  await supabase.from("request_responses").upsert({ request_id: requestId, user_id: user.id, status: "interested" }, { onConflict: "request_id,user_id" });
+  if (!requestId) {
+    redirect("/requests?error=Choose%20a%20valid%20request.");
+  }
+
+  const { data: request } = await supabase.from("requests").select("user_id").eq("id", requestId).maybeSingle();
+
+  if (request?.user_id === user.id) {
+    redirect("/requests?error=You%20cannot%20respond%20to%20your%20own%20request.");
+  }
+
+  const { error } = await supabase.from("request_responses").upsert({ request_id: requestId, user_id: user.id, status: "interested" }, { onConflict: "request_id,user_id" });
+
+  if (error) {
+    redirect(`/requests?error=${encodeURIComponent(error.message)}`);
+  }
+
   revalidatePath("/requests");
+  redirect("/requests?interested=1");
 }
 
 async function reportRequest(formData: FormData) {
@@ -96,7 +128,7 @@ async function reportRequest(formData: FormData) {
   redirect("/requests?reported=1");
 }
 
-export default async function RequestsPage({ searchParams }: { searchParams?: Promise<{ error?: string; reported?: string }> }) {
+export default async function RequestsPage({ searchParams }: { searchParams?: Promise<{ error?: string; reported?: string; posted?: string; interested?: string }> }) {
   const user = await requireUser();
   const params = await searchParams;
   const supabase = await createClient();
@@ -121,6 +153,8 @@ export default async function RequestsPage({ searchParams }: { searchParams?: Pr
 
           {params?.error ? <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{params.error}</p> : null}
           {params?.reported ? <p className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">Request report received.</p> : null}
+          {params?.posted ? <p className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">Request posted. Students can respond now.</p> : null}
+          {params?.interested ? <p className="mt-4 rounded-lg bg-cyan-50 p-3 text-sm font-semibold text-cyan-800">Interest sent to the request owner.</p> : null}
 
           <form action={createRequest} className="mt-4 space-y-4 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:mt-5 sm:p-5">
             <label className="block text-sm font-bold text-zinc-700">
@@ -133,11 +167,11 @@ export default async function RequestsPage({ searchParams }: { searchParams?: Pr
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Title
-              <input name="title" required maxLength={90} placeholder="Need frontend developer" className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="title" required minLength={4} maxLength={90} placeholder="Need frontend developer" className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Description
-              <textarea name="description" required rows={4} placeholder="We're building a campus navigation app for a hackathon." className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <textarea name="description" required minLength={10} maxLength={1000} rows={4} placeholder="We're building a campus navigation app for a hackathon." className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Expiry time
