@@ -73,7 +73,7 @@ export default async function Home() {
         </section>
 
         <div className="interactive-card rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm sm:p-5">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-xl border border-zinc-200 bg-gradient-to-br from-white via-cyan-50/70 to-emerald-50/80 p-5 text-zinc-950">
+          <div className="relative flex min-h-[34rem] flex-col overflow-hidden rounded-xl border border-zinc-200 bg-gradient-to-br from-white via-cyan-50/70 to-emerald-50/80 p-5 text-zinc-950 sm:min-h-[36rem]">
             <div className="absolute inset-x-5 top-16 h-px bg-zinc-200/80" />
             <div className="absolute inset-y-5 left-16 w-px bg-zinc-200/80" />
             <div className="flex items-center justify-between">
@@ -105,9 +105,11 @@ export default async function Home() {
               <p className="text-xs font-black uppercase text-zinc-500">Why</p>
               <p className="mt-2 text-sm leading-6">This is a real Bennett Connect profile. Students can open it, see the campus signal, and connect after joining.</p>
             </div>
-            <Link href={profileHref} className="pressable absolute bottom-5 right-5 rounded-full bg-emerald-500 px-3 py-2 text-xs font-black text-white shadow-lg hover:bg-emerald-600">
-              View profile
-            </Link>
+            <div className="relative mt-auto flex justify-end pt-5">
+              <Link href={profileHref} className="pressable rounded-full bg-emerald-500 px-4 py-2.5 text-xs font-black text-white shadow-lg hover:bg-emerald-600">
+                View profile
+              </Link>
+            </div>
           </div>
         </div>
       </main>
