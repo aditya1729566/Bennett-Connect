@@ -64,10 +64,9 @@ export default async function SettingsPage() {
 
         <section className="mt-5 rounded-lg border border-red-200 bg-white p-4 shadow-sm sm:p-5">
           <h2 className="text-xl font-black text-red-700">Delete account</h2>
-          <p className="mt-2 text-sm leading-6 text-zinc-600">This removes your profile data from the app. Supabase Auth user deletion can be completed from the Supabase dashboard or a server-only admin function.</p>
           <form action={deleteAccount} className="mt-4">
             <PendingSubmitButton variant="danger" pendingLabel="Deleting...">
-              Delete profile data
+              Delete account
             </PendingSubmitButton>
           </form>
         </section>
