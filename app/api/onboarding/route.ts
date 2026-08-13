@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { interestOptions } from "@/lib/data/options";
 import { slugify, usernameFromName } from "@/lib/data/slug";
-import { createClient, getUser } from "@/lib/supabase/server";
+import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
 
 function redirectTo(request: NextRequest, path: string) {
   return NextResponse.redirect(new URL(path, request.url), 303);
@@ -19,6 +20,7 @@ export async function POST(request: NextRequest) {
 
   const formData = await request.formData();
   const supabase = await createClient();
+  const adminSupabase = createAdminClient();
   const fullName = String(formData.get("full_name") ?? "").trim();
   const course = String(formData.get("course") ?? "").trim();
   const residenceType = String(formData.get("residence_type") ?? "hostel") === "day_scholar" ? "day_scholar" : "hostel";
@@ -44,8 +46,9 @@ export async function POST(request: NextRequest) {
     return onboardingError(request, "Room number must be 20 characters or fewer.");
   }
 
-  if (selectedInterestSlugs.length < 1) {
-    return onboardingError(request, "Choose at least one interest so recommendations can work.");
+  const customInterest = String(formData.get("custom_interest") ?? "").trim();
+  if (selectedInterestSlugs.length < 1 && !customInterest) {
+    return onboardingError(request, "Choose or add at least one interest so recommendations can work.");
   }
 
   if (selectedGoalSlugs.length < 1 && !String(formData.get("custom_goal") ?? "").trim()) {
@@ -82,7 +85,29 @@ export async function POST(request: NextRequest) {
     return onboardingError(request, profileError.message);
   }
 
-  const { data: interests, error: interestLookupError } = await supabase.from("interests").select("id, slug").in("slug", selectedInterestSlugs);
+  let interestSlugs = [...new Set(selectedInterestSlugs)];
+  const selectedSlugSet = new Set(interestSlugs);
+  const knownSelectedInterests = interestOptions
+    .filter((interest) => selectedSlugSet.has(slugify(interest)))
+    .map((interest) => ({ name: interest, slug: slugify(interest) }));
+
+  if (knownSelectedInterests.length > 0) {
+    const { error: seedInterestError } = await adminSupabase.from("interests").upsert(knownSelectedInterests, { onConflict: "slug" });
+    if (seedInterestError) {
+      return onboardingError(request, seedInterestError.message);
+    }
+  }
+
+  if (customInterest) {
+    const customSlug = slugify(customInterest);
+    const { error: customInterestError } = await adminSupabase.from("interests").upsert({ name: customInterest, slug: customSlug }, { onConflict: "slug" });
+    if (customInterestError) {
+      return onboardingError(request, customInterestError.message);
+    }
+    interestSlugs = [...new Set([...interestSlugs, customSlug])];
+  }
+
+  const { data: interests, error: interestLookupError } = await adminSupabase.from("interests").select("id, slug").in("slug", interestSlugs);
   if (interestLookupError) {
     return onboardingError(request, interestLookupError.message);
   }

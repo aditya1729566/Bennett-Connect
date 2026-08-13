@@ -92,6 +92,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
                 </label>
               ))}
             </div>
+            <input name="custom_interest" placeholder="Add an interest if yours is missing" className="mt-3 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
           </section>
 
           <section>

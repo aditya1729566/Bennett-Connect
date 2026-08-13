@@ -6,7 +6,7 @@ import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { RequestCard } from "@/components/RequestCard";
 import { interestOptions, requestCategories } from "@/lib/data/options";
 import { slugify } from "@/lib/data/slug";
-import { createClient, requireUser } from "@/lib/supabase/server";
+import { createAdminClient, createClient, requireUser } from "@/lib/supabase/server";
 import type { NeedRequest } from "@/types/domain";
 
 type RawRequest = {
@@ -46,7 +46,9 @@ async function createRequest(formData: FormData) {
 
   const user = await requireUser();
   const supabase = await createClient();
+  const adminSupabase = createAdminClient();
   const selectedInterestSlugs = formData.getAll("interests").map(String);
+  const customInterest = String(formData.get("custom_interest") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const expiresAt = String(formData.get("expires_at") ?? "");
@@ -80,7 +82,23 @@ async function createRequest(formData: FormData) {
     redirect(`/requests?error=${encodeURIComponent(error.message)}`);
   }
 
-  const { data: interests } = await supabase.from("interests").select("id, slug").in("slug", selectedInterestSlugs);
+  let interestSlugs = [...new Set(selectedInterestSlugs)];
+  const selectedSlugSet = new Set(interestSlugs);
+  const knownSelectedInterests = interestOptions
+    .filter((interest) => selectedSlugSet.has(slugify(interest)))
+    .map((interest) => ({ name: interest, slug: slugify(interest) }));
+
+  if (knownSelectedInterests.length > 0) {
+    await adminSupabase.from("interests").upsert(knownSelectedInterests, { onConflict: "slug" });
+  }
+
+  if (customInterest) {
+    const customSlug = slugify(customInterest);
+    await adminSupabase.from("interests").upsert({ name: customInterest, slug: customSlug }, { onConflict: "slug" });
+    interestSlugs = [...new Set([...interestSlugs, customSlug])];
+  }
+
+  const { data: interests } = await adminSupabase.from("interests").select("id, slug").in("slug", interestSlugs);
   if (request && interests && interests.length > 0) {
     await supabase.from("request_interests").insert(interests.map((interest) => ({ request_id: request.id, interest_id: interest.id })));
   }
@@ -187,6 +205,7 @@ export default async function RequestsPage({ searchParams }: { searchParams?: Pr
                   </label>
                 ))}
               </div>
+              <input name="custom_interest" placeholder="Add an interest if yours is missing" className="mt-3 w-full rounded-lg border border-zinc-300 px-4 py-3 text-sm outline-none focus:border-cyan-600" />
             </div>
             <PendingSubmitButton pendingLabel="Posting..." className="w-full">
               Post request
