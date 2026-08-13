@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { createClient, requireUser } from "@/lib/supabase/server";
 
 type ConversationRow = {
@@ -28,24 +29,34 @@ function formatTime(value?: string) {
 export default async function ChatPage() {
   const user = await requireUser();
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("connection_requests")
-    .select("id,sender_id,receiver_id,sender:profiles!connection_requests_sender_id_fkey(username,full_name,avatar_url,course),receiver:profiles!connection_requests_receiver_id_fkey(username,full_name,avatar_url,course)")
-    .eq("status", "accepted")
-    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-    .order("updated_at", { ascending: false })
-    .limit(40);
+  const { data } = await withTimeoutFallback(
+    supabase
+      .from("connection_requests")
+      .select("id,sender_id,receiver_id,sender:profiles!connection_requests_sender_id_fkey(username,full_name,avatar_url,course),receiver:profiles!connection_requests_receiver_id_fkey(username,full_name,avatar_url,course)")
+      .eq("status", "accepted")
+      .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+      .order("updated_at", { ascending: false })
+      .limit(40),
+    4000,
+    "Chat conversation list",
+    { data: [], error: null },
+  );
 
   const conversations = (data ?? []) as unknown as ConversationRow[];
   const conversationIds = conversations.map((conversation) => conversation.id);
   const { data: messages } =
     conversationIds.length > 0
-      ? await supabase
-          .from("chat_messages")
-          .select("connection_request_id,body,created_at")
-          .in("connection_request_id", conversationIds)
-          .order("created_at", { ascending: false })
-          .limit(80)
+      ? await withTimeoutFallback(
+          supabase
+            .from("chat_messages")
+            .select("connection_request_id,body,created_at")
+            .in("connection_request_id", conversationIds)
+            .order("created_at", { ascending: false })
+            .limit(80),
+          3500,
+          "Latest chat messages",
+          { data: [], error: null },
+        )
       : { data: [] };
 
   const latestByConnection = new Map<number, LastMessageRow>();

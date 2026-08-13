@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { createServerClient } from "@supabase/ssr";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { isSupabaseAdminConfigured, isSupabaseConfigured, supabaseAnonKey, supabaseServiceRoleKey, supabaseUrl } from "./config";
 import type { Database } from "@/types/database";
 
@@ -47,10 +48,7 @@ export const getUser = cache(async function getUser() {
 
   try {
     const supabase = await createClient();
-    const result = await Promise.race([
-      supabase.auth.getUser(),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000)),
-    ]);
+    const result = await withTimeoutFallback(supabase.auth.getUser(), 2500, "Supabase auth user lookup", null);
 
     return result?.data.user ?? null;
   } catch {

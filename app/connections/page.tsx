@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { createClient, requireUser } from "@/lib/supabase/server";
 
 type ConnectionRow = {
@@ -59,12 +60,17 @@ function Empty({ children }: { children: React.ReactNode }) {
 export default async function ConnectionsPage() {
   const user = await requireUser();
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("connection_requests")
-    .select("id,sender_id,receiver_id,status,sender:profiles!connection_requests_sender_id_fkey(username,full_name,avatar_url,course),receiver:profiles!connection_requests_receiver_id_fkey(username,full_name,avatar_url,course)")
-    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-    .order("updated_at", { ascending: false })
-    .limit(80);
+  const { data } = await withTimeoutFallback(
+    supabase
+      .from("connection_requests")
+      .select("id,sender_id,receiver_id,status,sender:profiles!connection_requests_sender_id_fkey(username,full_name,avatar_url,course),receiver:profiles!connection_requests_receiver_id_fkey(username,full_name,avatar_url,course)")
+      .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+      .order("updated_at", { ascending: false })
+      .limit(80),
+    4000,
+    "Connections list",
+    { data: [], error: null },
+  );
 
   const rows = (data ?? []) as unknown as ConnectionRow[];
   const received = rows.filter((row) => row.receiver_id === user.id && row.status === "pending");

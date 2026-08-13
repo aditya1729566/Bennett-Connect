@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import type { Database } from "@/types/database";
 import type { Goal, Interest, Profile, Skill } from "@/types/domain";
 
@@ -78,7 +79,7 @@ export function mapProfile(raw: RawProfile): Profile {
 }
 
 export async function getProfileById(supabase: SupabaseClient<Database>, id: string) {
-  const { data, error } = await supabase.from("profiles").select(profileSelect).eq("id", id).maybeSingle();
+  const { data, error } = await withTimeoutFallback(supabase.from("profiles").select(profileSelect).eq("id", id).maybeSingle(), 3500, "Profile lookup by id", { data: null, error: null });
   if (error || !data) {
     return null;
   }
@@ -86,7 +87,7 @@ export async function getProfileById(supabase: SupabaseClient<Database>, id: str
 }
 
 export async function getProfileByUsername(supabase: SupabaseClient<Database>, username: string) {
-  const { data, error } = await supabase.from("profiles").select(profileSelect).eq("username", username).maybeSingle();
+  const { data, error } = await withTimeoutFallback(supabase.from("profiles").select(profileSelect).eq("username", username).maybeSingle(), 3500, "Profile lookup by username", { data: null, error: null });
   if (error || !data) {
     return null;
   }
@@ -94,7 +95,7 @@ export async function getProfileByUsername(supabase: SupabaseClient<Database>, u
 }
 
 export async function getAllProfiles(supabase: SupabaseClient<Database>) {
-  const { data, error } = await supabase.from("profiles").select(profileSelect).order("updated_at", { ascending: false }).limit(100);
+  const { data, error } = await withTimeoutFallback(supabase.from("profiles").select(profileSelect).order("updated_at", { ascending: false }).limit(100), 4500, "Profile list lookup", { data: [], error: null });
   if (error || !data) {
     return [];
   }
@@ -104,17 +105,22 @@ export async function getAllProfiles(supabase: SupabaseClient<Database>) {
 export async function getExcludedRecommendationIds(supabase: SupabaseClient<Database>, userId: string) {
   const excluded = new Set<string>();
 
-  const { data: connections } = await supabase
-    .from("connection_requests")
-    .select("sender_id, receiver_id, status")
-    .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
-    .in("status", ["pending", "accepted", "blocked"]);
+  const { data: connections } = await withTimeoutFallback(
+    supabase
+      .from("connection_requests")
+      .select("sender_id, receiver_id, status")
+      .or(`sender_id.eq.${userId},receiver_id.eq.${userId}`)
+      .in("status", ["pending", "accepted", "blocked"]),
+    3000,
+    "Recommendation connection exclusions",
+    { data: [], error: null },
+  );
 
   (connections as { sender_id: string; receiver_id: string }[] | null)?.forEach((connection) => {
     excluded.add(connection.sender_id === userId ? connection.receiver_id : connection.sender_id);
   });
 
-  const { data: skips } = await supabase.from("profile_skips").select("skipped_user_id").eq("user_id", userId);
+  const { data: skips } = await withTimeoutFallback(supabase.from("profile_skips").select("skipped_user_id").eq("user_id", userId), 3000, "Recommendation skip exclusions", { data: [], error: null });
   (skips as { skipped_user_id: string }[] | null)?.forEach((skip) => excluded.add(skip.skipped_user_id));
 
   return excluded;

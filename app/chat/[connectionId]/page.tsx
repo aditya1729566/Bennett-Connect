@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { getProfileById } from "@/lib/data/profiles";
 import { notifyUser } from "@/lib/notifications/push";
 import { createClient, requireUser } from "@/lib/supabase/server";
@@ -37,13 +38,18 @@ async function sendMessage(formData: FormData) {
   }
 
   const supabase = await createClient();
-  const { data: connection } = await supabase
-    .from("connection_requests")
-    .select("sender_id,receiver_id,status")
-    .eq("id", connectionId)
-    .eq("status", "accepted")
-    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-    .maybeSingle();
+  const { data: connection } = await withTimeoutFallback(
+    supabase
+      .from("connection_requests")
+      .select("sender_id,receiver_id,status")
+      .eq("id", connectionId)
+      .eq("status", "accepted")
+      .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+      .maybeSingle(),
+    3000,
+    "Chat send connection lookup",
+    { data: null, error: null },
+  );
 
   if (!connection) {
     return;
@@ -80,13 +86,18 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ con
   const supabase = await createClient();
   const id = Number(connectionId);
 
-  const { data: connectionData } = await supabase
-    .from("connection_requests")
-    .select("id,sender_id,receiver_id,status,sender:profiles!connection_requests_sender_id_fkey(username,full_name,avatar_url,course),receiver:profiles!connection_requests_receiver_id_fkey(username,full_name,avatar_url,course)")
-    .eq("id", id)
-    .eq("status", "accepted")
-    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-    .maybeSingle();
+  const { data: connectionData } = await withTimeoutFallback(
+    supabase
+      .from("connection_requests")
+      .select("id,sender_id,receiver_id,status,sender:profiles!connection_requests_sender_id_fkey(username,full_name,avatar_url,course),receiver:profiles!connection_requests_receiver_id_fkey(username,full_name,avatar_url,course)")
+      .eq("id", id)
+      .eq("status", "accepted")
+      .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+      .maybeSingle(),
+    4000,
+    "Chat thread connection lookup",
+    { data: null, error: null },
+  );
 
   if (!connectionData) {
     notFound();
@@ -99,12 +110,17 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ con
     notFound();
   }
 
-  const { data: messagesData } = await supabase
-    .from("chat_messages")
-    .select("id,connection_request_id,sender_id,body,created_at")
-    .eq("connection_request_id", id)
-    .order("created_at", { ascending: false })
-    .limit(80);
+  const { data: messagesData } = await withTimeoutFallback(
+    supabase
+      .from("chat_messages")
+      .select("id,connection_request_id,sender_id,body,created_at")
+      .eq("connection_request_id", id)
+      .order("created_at", { ascending: false })
+      .limit(80),
+    4000,
+    "Chat thread messages",
+    { data: [], error: null },
+  );
 
   const messages = ((messagesData ?? []) as unknown as MessageRow[]).reverse();
 

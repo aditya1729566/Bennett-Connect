@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { allowedEmailDomains, isAllowedCampusEmail } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
@@ -22,7 +23,9 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
+  const { error } = await withTimeoutFallback(supabase.auth.exchangeCodeForSession(code), 5000, "Outlook session exchange", {
+    error: new Error("Outlook sign-in took too long. Please try again."),
+  });
 
   if (error) {
     const message =
@@ -34,7 +37,7 @@ export async function GET(request: NextRequest) {
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await withTimeoutFallback(supabase.auth.getUser(), 2500, "Outlook callback user lookup", { data: { user: null }, error: null });
   const email = user?.email ?? "";
 
   if (!isAllowedCampusEmail(email)) {

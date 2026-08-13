@@ -4,6 +4,7 @@ import { InterestBadge } from "@/components/InterestBadge";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { RequestCard } from "@/components/RequestCard";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { interestOptions, requestCategories } from "@/lib/data/options";
 import { slugify } from "@/lib/data/slug";
 import { createAdminClient, createClient, requireUser } from "@/lib/supabase/server";
@@ -118,7 +119,7 @@ async function respondInterested(formData: FormData) {
     redirect("/requests?error=Choose%20a%20valid%20request.");
   }
 
-  const { data: request } = await supabase.from("requests").select("user_id").eq("id", requestId).maybeSingle();
+  const { data: request } = await withTimeoutFallback(supabase.from("requests").select("user_id").eq("id", requestId).maybeSingle(), 3000, "Request owner lookup", { data: null, error: null });
 
   if (request?.user_id === user.id) {
     redirect("/requests?error=You%20cannot%20respond%20to%20your%20own%20request.");
@@ -150,12 +151,17 @@ export default async function RequestsPage({ searchParams }: { searchParams?: Pr
   const user = await requireUser();
   const params = await searchParams;
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("requests")
-    .select("id,user_id,title,description,category,status,expires_at,created_at,profiles(username,full_name,avatar_url,course,graduation_year),request_interests(interests(id,name,slug))")
-    .eq("status", "active")
-    .order("created_at", { ascending: false })
-    .limit(30);
+  const { data } = await withTimeoutFallback(
+    supabase
+      .from("requests")
+      .select("id,user_id,title,description,category,status,expires_at,created_at,profiles(username,full_name,avatar_url,course,graduation_year),request_interests(interests(id,name,slug))")
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(30),
+    4500,
+    "Active requests list",
+    { data: [], error: null },
+  );
 
   const requests = ((data ?? []) as unknown as RawRequest[]).map(mapRequest);
 

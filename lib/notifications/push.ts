@@ -1,4 +1,5 @@
 import webpush from "web-push";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { createAdminClient } from "@/lib/supabase/server";
 
 type PushPayload = {
@@ -29,10 +30,10 @@ export async function notifyUser(userId: string, payload: PushPayload) {
   webpush.setVapidDetails(vapidSubject, vapidPublicKey!, vapidPrivateKey!);
 
   const supabase = createAdminClient();
-  const { data } = await supabase.from("push_subscriptions").select("endpoint,p256dh,auth").eq("user_id", userId);
+  const { data } = await withTimeoutFallback(supabase.from("push_subscriptions").select("endpoint,p256dh,auth").eq("user_id", userId), 2500, "Push subscription lookup", { data: [], error: null });
   const subscriptions = (data ?? []) as unknown as PushSubscriptionRow[];
 
-  await Promise.all(
+  await withTimeoutFallback(Promise.all(
     subscriptions.map(async (subscription) => {
       try {
         await webpush.sendNotification(
@@ -52,5 +53,5 @@ export async function notifyUser(userId: string, payload: PushPayload) {
         }
       }
     }),
-  );
+  ), 3500, "Push notification delivery", []);
 }

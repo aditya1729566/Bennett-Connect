@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { withTimeoutFallback } from "@/lib/async/withTimeout";
 import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "./config";
 import type { Database } from "@/types/database";
 
@@ -23,6 +24,6 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  await withTimeoutFallback(supabase.auth.getUser(), 1500, "Middleware auth refresh", null);
   return response;
 }
