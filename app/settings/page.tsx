@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { DeleteAccountForm } from "@/components/DeleteAccountForm";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
@@ -69,11 +70,9 @@ export default async function SettingsPage() {
 
         <section className="mt-5 rounded-lg border border-red-200 bg-white p-4 shadow-sm sm:p-5">
           <h2 className="text-xl font-black text-red-700">Delete account</h2>
-          <form action={deleteAccount} className="mt-4">
-            <PendingSubmitButton variant="danger" pendingLabel="Deleting...">
-              Delete account
-            </PendingSubmitButton>
-          </form>
+          <div className="mt-4">
+            <DeleteAccountForm action={deleteAccount} />
+          </div>
         </section>
       </main>
     </PageShell>
