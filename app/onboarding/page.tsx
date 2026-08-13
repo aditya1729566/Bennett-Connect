@@ -50,12 +50,19 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
               </select>
             </label>
             <label className="block text-sm font-bold text-zinc-700">
+              Stay type
+              <select name="residence_type" required defaultValue="hostel" className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600">
+                <option value="hostel">Hostel student</option>
+                <option value="day_scholar">Day scholar</option>
+              </select>
+            </label>
+            <label className="block text-sm font-bold text-zinc-700">
               Hostel
-              <input name="hostel" required placeholder="Required - enter your hostel name" className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="hostel" placeholder="Hostel students: required" className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Room no.
-              <input name="room_no" required placeholder="Required - enter your exact room no." className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="room_no" placeholder="Hostel students: required" className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
           </section>
 

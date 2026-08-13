@@ -27,6 +27,7 @@ export type Profile = {
   course: string | null;
   graduation_year: number | null;
   year_of_study: string | null;
+  residence_type: "hostel" | "day_scholar" | null;
   hostel: string | null;
   room_no: string | null;
   bio: string | null;

@@ -131,7 +131,7 @@ export default async function ProfilePage({
               <h1 className="mt-2 break-words text-3xl font-black leading-tight text-zinc-950 sm:text-4xl">{profile.full_name}</h1>
               <p className="mt-2 text-sm font-semibold text-zinc-500">@{profile.username}</p>
               <p className="mt-3 text-sm leading-6 text-zinc-700 sm:text-base">
-                {[profile.course, profile.year_of_study ?? profile.graduation_year, profile.hostel].filter(Boolean).join(" • ")}
+                {[profile.course, profile.year_of_study ?? profile.graduation_year, profile.residence_type === "day_scholar" ? "Day scholar" : profile.hostel].filter(Boolean).join(" • ")}
               </p>
               {profile.room_no ? (
                 <p className="mt-2 inline-flex rounded-full border border-cyan-100 bg-cyan-50 px-3 py-1.5 text-sm font-black text-cyan-800">

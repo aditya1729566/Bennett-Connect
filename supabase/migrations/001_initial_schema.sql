@@ -23,6 +23,7 @@ create table public.profiles (
   course text,
   graduation_year integer,
   year_of_study text,
+  residence_type text not null default 'hostel' check (residence_type in ('hostel', 'day_scholar')),
   hostel text,
   room_no text check (char_length(coalesce(room_no, '')) <= 20),
   bio text check (char_length(coalesce(bio, '')) <= 280),

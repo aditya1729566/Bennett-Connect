@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
   const supabase = await createClient();
   const fullName = String(formData.get("full_name") ?? "").trim();
   const course = String(formData.get("course") ?? "").trim();
+  const residenceType = String(formData.get("residence_type") ?? "hostel") === "day_scholar" ? "day_scholar" : "hostel";
   const hostel = String(formData.get("hostel") ?? "").trim();
   const roomNo = String(formData.get("room_no") ?? "").trim();
   const graduationYear = Number(formData.get("graduation_year"));
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
     return onboardingError(request, "Full name, course, and graduation year are required.");
   }
 
-  if (!hostel || !roomNo) {
+  if (residenceType === "hostel" && (!hostel || !roomNo)) {
     return onboardingError(request, "Hostel and room number are required so students can find you on campus.");
   }
 
@@ -60,8 +61,9 @@ export async function POST(request: NextRequest) {
     course,
     graduation_year: graduationYear,
     year_of_study: String(formData.get("year_of_study") ?? "").trim() || null,
-    hostel,
-    room_no: roomNo,
+    residence_type: residenceType,
+    hostel: residenceType === "hostel" ? hostel : null,
+    room_no: residenceType === "hostel" ? roomNo : null,
     bio: String(formData.get("bio") ?? "").trim() || null,
     github_url: String(formData.get("github_url") ?? "").trim() || null,
     linkedin_url: String(formData.get("linkedin_url") ?? "").trim() || null,
