@@ -28,6 +28,7 @@ export type Profile = {
   graduation_year: number | null;
   year_of_study: string | null;
   hostel: string | null;
+  room_no: string | null;
   bio: string | null;
   github_url: string | null;
   linkedin_url: string | null;
