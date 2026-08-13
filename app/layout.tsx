@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Find My People",
-  description: "Find the students on campus you should know.",
+  title: "Bennett Connect",
+  description: "Find the Bennett University students you should know.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

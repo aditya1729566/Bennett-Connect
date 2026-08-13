@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SetupNotice } from "@/components/SetupNotice";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { allowedEmailDomains, isAllowedCampusEmail, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
 async function resetPassword(formData: FormData) {
@@ -13,7 +13,12 @@ async function resetPassword(formData: FormData) {
     redirect("/reset-password?message=Supabase%20is%20not%20configured%20yet.");
   }
 
-  const email = String(formData.get("email") ?? "");
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+
+  if (!isAllowedCampusEmail(email)) {
+    redirect(`/reset-password?message=${encodeURIComponent(`Use your Bennett email. Allowed domains: ${allowedEmailDomains.join(", ")}`)}`);
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(email);
 
@@ -32,7 +37,7 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
       <main className="mx-auto flex min-h-[calc(100vh-64px)] max-w-md flex-col justify-center px-4 py-10">
         <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-black text-zinc-950">Reset password</h1>
-          <p className="mt-2 text-sm leading-6 text-zinc-600">Send yourself a Supabase password reset link.</p>
+          <p className="mt-2 text-sm leading-6 text-zinc-600">Send a password reset link to your Bennett campus email.</p>
           <div className="mt-5">
             <SetupNotice />
           </div>

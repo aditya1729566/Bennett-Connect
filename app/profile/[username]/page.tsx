@@ -7,7 +7,7 @@ import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { getProfileById, getProfileByUsername } from "@/lib/data/profiles";
 import { notifyUser } from "@/lib/notifications/push";
-import { createClient, requireUser } from "@/lib/supabase/server";
+import { createAdminClient, createClient, getUser, requireUser } from "@/lib/supabase/server";
 
 async function connect(formData: FormData) {
   "use server";
@@ -103,17 +103,16 @@ export default async function ProfilePage({
   params: Promise<{ username: string }>;
   searchParams?: Promise<{ reported?: string; connected?: string; blocked?: string; error?: string }>;
 }) {
-  const user = await requireUser();
   const { username } = await params;
   const query = await searchParams;
-  const supabase = await createClient();
-  const profile = await getProfileByUsername(supabase, username);
+  const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY ? createAdminClient() : await createClient();
+  const [profile, user] = await Promise.all([getProfileByUsername(supabase, username), getUser()]);
 
   if (!profile) {
     notFound();
   }
 
-  const isOwnProfile = profile.id === user.id;
+  const isOwnProfile = profile.id === user?.id;
 
   return (
     <PageShell>
@@ -163,7 +162,16 @@ export default async function ProfilePage({
             {profile.codeforces_handle ? <span className="rounded-full border border-zinc-300 px-4 py-2">Codeforces: {profile.codeforces_handle}</span> : null}
           </div>
 
-          {!isOwnProfile ? (
+          {!user ? (
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              <Link href="/signup" className="pressable rounded-full bg-zinc-950 px-5 py-3 text-center text-sm font-black text-white shadow-sm hover:bg-zinc-800">
+                Join to connect
+              </Link>
+              <Link href="/login" className="pressable rounded-full border border-zinc-300 bg-white px-5 py-3 text-center text-sm font-black text-zinc-900 shadow-sm hover:border-zinc-400">
+                Log in
+              </Link>
+            </div>
+          ) : !isOwnProfile ? (
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <form action={connect}>
                 <input type="hidden" name="receiver_id" value={profile.id} />
@@ -183,7 +191,7 @@ export default async function ProfilePage({
           ) : null}
         </section>
 
-        {!isOwnProfile ? (
+        {user && !isOwnProfile ? (
           <form action={reportProfile} className="mt-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
             <h2 className="text-lg font-black text-zinc-950">Report profile</h2>
             <input type="hidden" name="reported_user_id" value={profile.id} />

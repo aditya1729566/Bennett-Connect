@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    return NextResponse.redirect(redirectUrl(request, `/login?error=${encodeURIComponent(error.message)}`));
+    const message =
+      error.message.toLowerCase().includes("fetch") || error.message.toLowerCase().includes("dns")
+        ? "Outlook sign-in could not finish. Please check your connection and try again."
+        : error.message;
+    return NextResponse.redirect(redirectUrl(request, `/login?error=${encodeURIComponent(message)}`));
   }
 
   const {

@@ -30,13 +30,18 @@ async function signInWithMicrosoft(formData: FormData) {
   const headerStore = await headers();
   const baseUrl = getBaseUrl(headerStore);
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: "azure",
-    options: {
-      redirectTo: `${baseUrl}/auth/callback?next=/discover`,
-      scopes: "email",
-    },
-  });
+  const { data, error } = await supabase.auth
+    .signInWithOAuth({
+      provider: "azure",
+      options: {
+        redirectTo: `${baseUrl}/auth/callback?next=/discover`,
+        scopes: "email",
+      },
+    })
+    .catch((cause: Error) => ({
+      data: { url: null },
+      error: new Error(cause.message.toLowerCase().includes("fetch") ? "Outlook sign-in could not start. Please check your connection and try again." : cause.message),
+    }));
 
   if (error || !data.url) {
     redirect(`${errorPath}?error=${encodeURIComponent(error?.message ?? "Could not start Outlook login.")}`);

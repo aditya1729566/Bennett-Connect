@@ -45,11 +45,17 @@ export const getUser = cache(async function getUser() {
     return null;
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  try {
+    const supabase = await createClient();
+    const result = await Promise.race([
+      supabase.auth.getUser(),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000)),
+    ]);
+
+    return result?.data.user ?? null;
+  } catch {
+    return null;
+  }
 });
 
 export async function requireUser() {

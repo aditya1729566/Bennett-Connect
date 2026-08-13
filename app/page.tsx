@@ -2,7 +2,8 @@ import Link from "next/link";
 import { PageShell } from "@/components/PageShell";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
 import { getProfileByUsername } from "@/lib/data/profiles";
-import { createClient, getUser } from "@/lib/supabase/server";
+import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
+import type { Profile } from "@/types/domain";
 
 const FEATURED_USERNAME = "anarchistgoverner";
 const FEATURED_WEBSITE = "https://personal-website-bay-omega.vercel.app";
@@ -17,9 +18,21 @@ const FALLBACK_FEATURED_PROFILE = {
   linkedin_url: "https://www.linkedin.com/in/aditya-agrawal-367337288/",
 };
 
+async function getFeaturedProfile() {
+  try {
+    const supabase = process.env.SUPABASE_SERVICE_ROLE_KEY ? createAdminClient() : await createClient();
+    return await Promise.race([
+      getProfileByUsername(supabase, FEATURED_USERNAME),
+      new Promise<Profile | null>((resolve) => setTimeout(() => resolve(null), 2500)),
+    ]);
+  } catch {
+    return null;
+  }
+}
+
 export default async function Home() {
   const user = await getUser();
-  const featuredProfile = await getProfileByUsername(await createClient(), FEATURED_USERNAME);
+  const featuredProfile = await getFeaturedProfile();
   const previewName = featuredProfile?.full_name ?? FALLBACK_FEATURED_PROFILE.full_name;
   const previewMeta = [featuredProfile?.course ?? FALLBACK_FEATURED_PROFILE.course, featuredProfile?.year_of_study ?? featuredProfile?.graduation_year ?? FALLBACK_FEATURED_PROFILE.year_of_study]
     .filter(Boolean)
