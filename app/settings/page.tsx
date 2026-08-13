@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
+import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
 import { SetupNotice } from "@/components/SetupNotice";
 import { getProfileById } from "@/lib/data/profiles";
 import { createClient, requireUser } from "@/lib/supabase/server";
@@ -53,6 +54,10 @@ export default async function SettingsPage() {
               </Link>
             ) : null}
           </div>
+        </section>
+
+        <section className="mt-5">
+          <PushNotificationPrompt mode="settings" />
         </section>
 
         <section className="mt-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">

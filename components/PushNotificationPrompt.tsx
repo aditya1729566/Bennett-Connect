@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 
 const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+const DISMISS_KEY = "bennettconnect:push-dismissed-at";
+const DISMISS_DAYS = 7;
 
 function urlBase64ToUint8Array(value: string) {
   const padding = "=".repeat((4 - (value.length % 4)) % 4);
@@ -13,38 +15,91 @@ function urlBase64ToUint8Array(value: string) {
 
 async function getSubscription() {
   const registration = await navigator.serviceWorker.register("/sw.js");
+  await navigator.serviceWorker.ready;
   return {
     registration,
     subscription: await registration.pushManager.getSubscription(),
   };
 }
 
-export function PushNotificationPrompt() {
+function isDismissedRecently() {
+  const dismissedAt = Number(window.localStorage.getItem(DISMISS_KEY));
+  if (!dismissedAt) {
+    window.localStorage.removeItem("bennettconnect:push-dismissed");
+    return false;
+  }
+
+  return Date.now() - dismissedAt < DISMISS_DAYS * 24 * 60 * 60 * 1000;
+}
+
+function supportsPush() {
+  return Boolean(publicKey && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window);
+}
+
+type PushNotificationPromptProps = {
+  mode?: "toast" | "settings";
+};
+
+export function PushNotificationPrompt({ mode = "toast" }: PushNotificationPromptProps) {
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [supported, setSupported] = useState(true);
+  const [enabled, setEnabled] = useState(false);
+  const [permission, setPermission] = useState<NotificationPermission>("default");
 
   useEffect(() => {
-    if (!publicKey || !("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
-      return;
+    let cancelled = false;
+
+    async function checkPushState() {
+      if (!supportsPush()) {
+        if (!cancelled) {
+          setSupported(false);
+          setVisible(mode === "settings");
+        }
+        return;
+      }
+
+      if (!cancelled) {
+        setPermission(Notification.permission);
+      }
+
+      if (mode === "toast" && isDismissedRecently()) {
+        return;
+      }
+
+      if (Notification.permission === "denied") {
+        if (!cancelled) {
+          setVisible(mode === "settings");
+        }
+        return;
+      }
+
+      try {
+        const { subscription } = await getSubscription();
+        if (cancelled) {
+          return;
+        }
+        setEnabled(Boolean(subscription));
+        setVisible(mode === "settings" || !subscription);
+      } catch {
+        if (!cancelled) {
+          setVisible(mode === "settings");
+        }
+      }
     }
 
-    if (window.localStorage.getItem("bennettconnect:push-dismissed") === "1") {
-      return;
-    }
+    void checkPushState();
 
-    if (Notification.permission === "denied") {
-      return;
-    }
-
-    getSubscription()
-      .then(({ subscription }) => setVisible(!subscription && Notification.permission !== "granted"))
-      .catch(() => setVisible(false));
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [mode]);
 
   async function enableNotifications() {
-    if (!publicKey) {
-      setMessage("Notifications are not configured yet.");
+    if (!supportsPush()) {
+      setSupported(false);
+      setVisible(true);
       return;
     }
 
@@ -53,6 +108,7 @@ export function PushNotificationPrompt() {
 
     try {
       const permission = await Notification.requestPermission();
+      setPermission(permission);
       if (permission !== "granted") {
         setMessage("Notifications were not enabled on this device.");
         setBusy(false);
@@ -64,7 +120,7 @@ export function PushNotificationPrompt() {
         existing ??
         (await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(publicKey),
+          applicationServerKey: urlBase64ToUint8Array(publicKey!),
         }));
 
       const response = await fetch("/api/push/subscribe", {
@@ -78,7 +134,8 @@ export function PushNotificationPrompt() {
       }
 
       setMessage("Phone notifications are on for this device.");
-      setVisible(false);
+      setEnabled(true);
+      setVisible(mode === "settings");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Could not enable notifications.");
     } finally {
@@ -87,12 +144,37 @@ export function PushNotificationPrompt() {
   }
 
   function dismiss() {
-    window.localStorage.setItem("bennettconnect:push-dismissed", "1");
+    window.localStorage.setItem(DISMISS_KEY, String(Date.now()));
     setVisible(false);
   }
 
   if (!visible && !message) {
     return null;
+  }
+
+  if (mode === "settings") {
+    const status = !supported
+      ? "This browser cannot receive web push notifications. On iPhone, open Bennett Connect from an installed Home Screen app to use push notifications."
+      : permission === "denied"
+        ? "Notifications are blocked for this site. Enable them from your browser or phone settings, then come back here."
+        : enabled
+          ? "Notifications are enabled on this device."
+          : "Enable alerts for connection invites and chat messages on this device.";
+
+    return (
+      <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+        <h2 className="text-xl font-black text-zinc-950">Notifications</h2>
+        <p className="mt-2 text-sm leading-6 text-zinc-600">{message || status}</p>
+        <button
+          type="button"
+          onClick={enableNotifications}
+          disabled={busy || !supported || permission === "denied"}
+          className="pressable mt-4 inline-flex w-full items-center justify-center rounded-full bg-zinc-950 px-4 py-3 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-55 sm:w-auto"
+        >
+          {busy ? "Enabling..." : enabled ? "Re-check this device" : "Enable notifications"}
+        </button>
+      </div>
+    );
   }
 
   return (
