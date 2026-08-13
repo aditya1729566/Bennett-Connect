@@ -12,7 +12,6 @@ type RawProfile = {
   graduation_year: number | null;
   year_of_study: string | null;
   hostel: string | null;
-  room_no: string | null;
   bio: string | null;
   github_url: string | null;
   linkedin_url: string | null;
@@ -37,7 +36,6 @@ const profileSelect = `
   graduation_year,
   year_of_study,
   hostel,
-  room_no,
   bio,
   github_url,
   linkedin_url,
@@ -60,7 +58,6 @@ export function mapProfile(raw: RawProfile): Profile {
     graduation_year: raw.graduation_year,
     year_of_study: raw.year_of_study,
     hostel: raw.hostel,
-    room_no: raw.room_no,
     bio: raw.bio,
     github_url: raw.github_url,
     linkedin_url: raw.linkedin_url,

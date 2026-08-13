@@ -55,7 +55,6 @@ export async function POST(request: NextRequest) {
     graduation_year: graduationYear,
     year_of_study: String(formData.get("year_of_study") ?? "").trim() || null,
     hostel: String(formData.get("hostel") ?? "").trim() || null,
-    room_no: String(formData.get("room_no") ?? "").trim() || null,
     bio: String(formData.get("bio") ?? "").trim() || null,
     github_url: String(formData.get("github_url") ?? "").trim() || null,
     linkedin_url: String(formData.get("linkedin_url") ?? "").trim() || null,

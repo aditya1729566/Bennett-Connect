@@ -24,7 +24,6 @@ create table public.profiles (
   graduation_year integer,
   year_of_study text,
   hostel text,
-  room_no text,
   bio text check (char_length(coalesce(bio, '')) <= 280),
   github_url text,
   linkedin_url text,
