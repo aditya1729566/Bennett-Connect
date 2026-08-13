@@ -23,6 +23,7 @@ create table public.profiles (
   course text,
   graduation_year integer,
   year_of_study text,
+  gender text check (gender in ('male', 'female', 'non_binary', 'prefer_not_to_say')),
   residence_type text not null default 'hostel' check (residence_type in ('hostel', 'day_scholar')),
   hostel text check (residence_type <> 'hostel' or hostel is null or char_length(hostel) <= 2),
   room_no text check (char_length(coalesce(room_no, '')) <= 20),

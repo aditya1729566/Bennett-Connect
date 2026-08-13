@@ -11,6 +11,8 @@ function onboardingError(request: NextRequest, message: string) {
   return redirectTo(request, `/onboarding?error=${encodeURIComponent(message)}`);
 }
 
+const genderOptions = new Set(["male", "female", "non_binary", "prefer_not_to_say"]);
+
 export async function POST(request: NextRequest) {
   const user = await getUser();
 
@@ -23,6 +25,8 @@ export async function POST(request: NextRequest) {
   const adminSupabase = createAdminClient();
   const fullName = String(formData.get("full_name") ?? "").trim();
   const course = String(formData.get("course") ?? "").trim();
+  const genderInput = String(formData.get("gender") ?? "").trim();
+  const gender = genderOptions.has(genderInput) ? genderInput : null;
   const residenceType = String(formData.get("residence_type") ?? "hostel") === "day_scholar" ? "day_scholar" : "hostel";
   const hostel = String(formData.get("hostel") ?? "").trim().toUpperCase();
   const roomNo = String(formData.get("room_no") ?? "").trim();
@@ -32,6 +36,10 @@ export async function POST(request: NextRequest) {
 
   if (!fullName || !course || !graduationYear) {
     return onboardingError(request, "Full name, course, and graduation year are required.");
+  }
+
+  if (genderInput && !gender) {
+    return onboardingError(request, "Choose a valid gender option.");
   }
 
   if (residenceType === "hostel" && (!hostel || !roomNo)) {
@@ -72,6 +80,7 @@ export async function POST(request: NextRequest) {
     course,
     graduation_year: graduationYear,
     year_of_study: String(formData.get("year_of_study") ?? "").trim() || null,
+    gender,
     residence_type: residenceType,
     hostel: residenceType === "hostel" ? hostel : null,
     room_no: residenceType === "hostel" ? roomNo : null,

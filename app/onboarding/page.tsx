@@ -60,6 +60,16 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
               </select>
             </label>
             <label className="block text-sm font-bold text-zinc-700">
+              Gender
+              <select name="gender" defaultValue={profile?.gender ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600">
+                <option value="">Choose gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="non_binary">Non-binary</option>
+                <option value="prefer_not_to_say">Prefer not to say</option>
+              </select>
+            </label>
+            <label className="block text-sm font-bold text-zinc-700">
               Stay type
               <select name="residence_type" required defaultValue={profile?.residence_type ?? "hostel"} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600">
                 <option value="hostel">Hostel student</option>
