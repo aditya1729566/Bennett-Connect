@@ -1,16 +1,24 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { PageShell } from "@/components/PageShell";
 import { MicrosoftSignInButton } from "@/components/MicrosoftSignInButton";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SetupNotice } from "@/components/SetupNotice";
-import { allowedEmailDomains, isAllowedCampusEmail, isSupabaseAdminConfigured, isSupabaseConfigured } from "@/lib/supabase/config";
-import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
+import { allowedEmailDomains, isAllowedCampusEmail, isSupabaseConfigured } from "@/lib/supabase/config";
+import { createClient, getUser } from "@/lib/supabase/server";
+
+async function getBaseUrl() {
+  const headerStore = await headers();
+  const host = headerStore.get("x-forwarded-host") ?? headerStore.get("host");
+  const protocol = headerStore.get("x-forwarded-proto") ?? "https";
+  return host ? `${protocol}://${host}` : "http://localhost:3000";
+}
 
 async function signup(formData: FormData) {
   "use server";
 
-  if (!isSupabaseConfigured || !isSupabaseAdminConfigured) {
+  if (!isSupabaseConfigured) {
     redirect("/signup?error=Supabase%20is%20not%20configured%20yet.");
   }
 
@@ -21,31 +29,24 @@ async function signup(formData: FormData) {
     redirect(`/signup?error=${encodeURIComponent(`Use an approved campus email domain: ${allowedEmailDomains.join(", ")}`)}`);
   }
 
-  const admin = createAdminClient();
-  const created = await admin.auth.admin.createUser({
+  const supabase = await createClient();
+  const baseUrl = await getBaseUrl();
+  const created = await supabase.auth.signUp({
     email,
     password,
-    email_confirm: true,
+    options: {
+      emailRedirectTo: `${baseUrl}/login`,
+    },
   });
 
   if (created.error) {
-    const message = created.error.message.includes("already been registered")
+    const message = created.error.message.includes("already registered")
       ? "This email is already registered. Log in instead."
       : created.error.message;
     redirect(`/signup?error=${encodeURIComponent(message)}`);
   }
 
-  const supabase = await createClient();
-  const signedIn = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (signedIn.error) {
-    redirect(`/login?error=${encodeURIComponent("Account created. Please log in with your password.")}`);
-  }
-
-  redirect("/onboarding");
+  redirect(`/login?error=${encodeURIComponent("Check your Bennett email and confirm your account before logging in.")}`);
 }
 
 export default async function SignupPage({ searchParams }: { searchParams?: Promise<{ error?: string }> }) {

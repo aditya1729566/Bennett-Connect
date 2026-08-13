@@ -4,7 +4,7 @@ import { PageShell } from "@/components/PageShell";
 import { MicrosoftSignInButton } from "@/components/MicrosoftSignInButton";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SetupNotice } from "@/components/SetupNotice";
-import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
+import { createClient, getUser } from "@/lib/supabase/server";
 import { allowedEmailDomains, isAllowedCampusEmail, isSupabaseConfigured } from "@/lib/supabase/config";
 
 async function login(formData: FormData) {
@@ -22,21 +22,7 @@ async function login(formData: FormData) {
   }
 
   const supabase = await createClient();
-  let { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error?.message.toLowerCase().includes("email not confirmed")) {
-    const admin = createAdminClient();
-    const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    const existingUser = data.users.find((user) => user.email?.toLowerCase() === email);
-
-    if (existingUser) {
-      const confirmed = await admin.auth.admin.updateUserById(existingUser.id, { email_confirm: true });
-      if (!confirmed.error) {
-        const retried = await supabase.auth.signInWithPassword({ email, password });
-        error = retried.error;
-      }
-    }
-  }
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     redirect(`/login?error=${encodeURIComponent(error.message)}`);
