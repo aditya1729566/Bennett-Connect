@@ -19,6 +19,8 @@ const requiredRoutes = [
   "app/login/page.tsx",
   "app/signup/page.tsx",
   "app/auth/callback/route.ts",
+  "app/api/push/subscribe/route.ts",
+  "app/api/push/unsubscribe/route.ts",
   "app/onboarding/page.tsx",
   "app/discover/page.tsx",
   "app/profile/[username]/page.tsx",
@@ -40,6 +42,9 @@ const envExample = read(".env.example");
 for (const key of ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"]) {
   check("env example has required key", envExample.includes(`${key}=`), key);
   check("env example does not contain real values", !new RegExp(`${key}=\\S+`).test(envExample), key);
+}
+for (const key of ["NEXT_PUBLIC_VAPID_PUBLIC_KEY", "VAPID_PRIVATE_KEY", "VAPID_SUBJECT"]) {
+  check("env example has notification key", envExample.includes(`${key}=`), key);
 }
 
 const landing = read("app/page.tsx");
@@ -76,6 +81,22 @@ for (const policy of [
 const chatMigration = read("supabase/migrations/002_chat_messages.sql");
 check("chat migration is policy-idempotent", chatMigration.includes('drop policy if exists "Accepted connection participants can read chat messages"'));
 check("chat migration is send-policy-idempotent", chatMigration.includes('drop policy if exists "Accepted connection participants can send chat messages"'));
+
+const pushMigration = read("supabase/migrations/003_push_subscriptions.sql");
+check("push subscription table exists", pushMigration.includes("create table if not exists public.push_subscriptions"));
+check("push subscriptions have RLS", pushMigration.includes("alter table public.push_subscriptions enable row level security"));
+check("push subscriptions are user-scoped", pushMigration.includes("user_id = auth.uid()"));
+
+const serviceWorker = read("public/sw.js");
+check("service worker handles push", serviceWorker.includes('addEventListener("push"'));
+check("service worker handles notification clicks", serviceWorker.includes('addEventListener("notificationclick"'));
+
+const pushPrompt = read("components/PushNotificationPrompt.tsx");
+check("push prompt registers service worker", pushPrompt.includes('navigator.serviceWorker.register("/sw.js")'));
+check("push prompt saves subscriptions", pushPrompt.includes("/api/push/subscribe"));
+
+const pushSender = read("lib/notifications/push.ts");
+check("push sender uses web-push", pushSender.includes("webpush.sendNotification"));
 
 const scannedFiles = [
   ".env.example",

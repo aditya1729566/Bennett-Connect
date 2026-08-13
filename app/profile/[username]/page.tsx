@@ -5,7 +5,8 @@ import { InterestBadge } from "@/components/InterestBadge";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
-import { getProfileByUsername } from "@/lib/data/profiles";
+import { getProfileById, getProfileByUsername } from "@/lib/data/profiles";
+import { notifyUser } from "@/lib/notifications/push";
 import { createClient, requireUser } from "@/lib/supabase/server";
 
 async function connect(formData: FormData) {
@@ -28,6 +29,15 @@ async function connect(formData: FormData) {
 
   if (error && error.code !== "23505") {
     redirect(`/profile/${username}?error=${encodeURIComponent(error.message)}`);
+  }
+
+  if (!error) {
+    const senderProfile = await getProfileById(supabase, user.id);
+    await notifyUser(receiverId, {
+      title: "New connection invite",
+      body: `${senderProfile?.full_name ?? "Someone"} wants to connect with you on Bennett Connect.`,
+      url: "/connections",
+    });
   }
 
   redirect(`/profile/${username}?connected=1`);

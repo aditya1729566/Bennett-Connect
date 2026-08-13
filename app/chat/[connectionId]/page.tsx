@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { ProfileAvatar } from "@/components/ProfileAvatar";
+import { getProfileById } from "@/lib/data/profiles";
+import { notifyUser } from "@/lib/notifications/push";
 import { createClient, requireUser } from "@/lib/supabase/server";
 
 type ChatConnection = {
@@ -35,11 +37,34 @@ async function sendMessage(formData: FormData) {
   }
 
   const supabase = await createClient();
-  await supabase.from("chat_messages").insert({
+  const { data: connection } = await supabase
+    .from("connection_requests")
+    .select("sender_id,receiver_id,status")
+    .eq("id", connectionId)
+    .eq("status", "accepted")
+    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+    .maybeSingle();
+
+  if (!connection) {
+    return;
+  }
+
+  const { error } = await supabase.from("chat_messages").insert({
     connection_request_id: connectionId,
     sender_id: user.id,
     body,
   });
+
+  if (!error) {
+    const typedConnection = connection as { sender_id: string; receiver_id: string };
+    const receiverId = typedConnection.sender_id === user.id ? typedConnection.receiver_id : typedConnection.sender_id;
+    const senderProfile = await getProfileById(supabase, user.id);
+    await notifyUser(receiverId, {
+      title: `New message from ${senderProfile?.full_name ?? "Bennett Connect"}`,
+      body: body.length > 96 ? `${body.slice(0, 93)}...` : body,
+      url: `/chat/${connectionId}`,
+    });
+  }
 
   revalidatePath(`/chat/${connectionId}`);
   revalidatePath("/chat");

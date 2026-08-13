@@ -6,6 +6,7 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { SetupNotice } from "@/components/SetupNotice";
 import { getAllProfiles, getExcludedRecommendationIds, getProfileById } from "@/lib/data/profiles";
 import { getRecommendations } from "@/lib/matching/getRecommendations";
+import { notifyUser } from "@/lib/notifications/push";
 import { createClient, requireUser } from "@/lib/supabase/server";
 
 async function connect(formData: FormData) {
@@ -27,6 +28,15 @@ async function connect(formData: FormData) {
 
   if (error && error.code !== "23505") {
     redirect(`/discover?error=${encodeURIComponent(error.message)}`);
+  }
+
+  if (!error) {
+    const senderProfile = await getProfileById(supabase, user.id);
+    await notifyUser(receiverId, {
+      title: "New connection invite",
+      body: `${senderProfile?.full_name ?? "Someone"} wants to connect with you on Bennett Connect.`,
+      url: "/connections",
+    });
   }
 
   revalidatePath("/discover");
