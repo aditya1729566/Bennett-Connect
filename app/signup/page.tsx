@@ -101,7 +101,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: Prom
           <form action={signup} className="space-y-4">
             <label className="block text-sm font-bold text-zinc-700">
               University email
-              <input name="email" type="email" required className="mt-2 min-h-12 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="email" type="email" required maxLength={254} placeholder="name@bennett.edu.in" className="mt-2 min-h-12 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Password

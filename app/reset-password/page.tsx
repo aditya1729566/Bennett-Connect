@@ -45,7 +45,7 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
           <form action={resetPassword} className="mt-6 space-y-4">
             <label className="block text-sm font-bold text-zinc-700">
               Email
-              <input name="email" type="email" required className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="email" type="email" required maxLength={254} placeholder="name@bennett.edu.in" className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <PendingSubmitButton pendingLabel="Sending..." className="w-full">
               Send reset link

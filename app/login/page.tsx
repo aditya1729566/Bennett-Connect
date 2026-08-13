@@ -5,7 +5,7 @@ import { MicrosoftSignInButton } from "@/components/MicrosoftSignInButton";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SetupNotice } from "@/components/SetupNotice";
 import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { allowedEmailDomains, isAllowedCampusEmail, isSupabaseConfigured } from "@/lib/supabase/config";
 
 async function login(formData: FormData) {
   "use server";
@@ -16,6 +16,11 @@ async function login(formData: FormData) {
 
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
+
+  if (!isAllowedCampusEmail(email)) {
+    redirect(`/login?error=${encodeURIComponent(`Use your Bennett email. Allowed domains: ${allowedEmailDomains.join(", ")}`)}`);
+  }
+
   const supabase = await createClient();
   let { error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -99,7 +104,7 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
           <form action={login} className="space-y-4">
             <label className="block text-sm font-bold text-zinc-700">
               Email
-              <input name="email" type="email" required className="mt-2 min-h-12 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <input name="email" type="email" required maxLength={254} placeholder="name@bennett.edu.in" className="mt-2 min-h-12 w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Password

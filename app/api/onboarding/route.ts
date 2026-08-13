@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   const fullName = String(formData.get("full_name") ?? "").trim();
   const course = String(formData.get("course") ?? "").trim();
   const residenceType = String(formData.get("residence_type") ?? "hostel") === "day_scholar" ? "day_scholar" : "hostel";
-  const hostel = String(formData.get("hostel") ?? "").trim();
+  const hostel = String(formData.get("hostel") ?? "").trim().toUpperCase();
   const roomNo = String(formData.get("room_no") ?? "").trim();
   const graduationYear = Number(formData.get("graduation_year"));
   const selectedInterestSlugs = formData.getAll("interests").map(String);
@@ -34,6 +34,14 @@ export async function POST(request: NextRequest) {
 
   if (residenceType === "hostel" && (!hostel || !roomNo)) {
     return onboardingError(request, "Hostel and room number are required so students can find you on campus.");
+  }
+
+  if (residenceType === "hostel" && hostel.length > 2) {
+    return onboardingError(request, "Hostel must be a short 2-character code, like C8.");
+  }
+
+  if (residenceType === "hostel" && roomNo.length > 20) {
+    return onboardingError(request, "Room number must be 20 characters or fewer.");
   }
 
   if (selectedInterestSlugs.length < 1) {
