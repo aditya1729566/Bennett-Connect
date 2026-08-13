@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Bennett Connect",
     images: [
       {
-        url: "/og-image.png",
+        url: "/bennett-connect-preview.png",
         width: 1200,
         height: 630,
         alt: "Bennett Connect logo and campus discovery tagline",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Bennett Connect",
     description: "Find the people on campus you should know.",
-    images: ["/og-image.png"],
+    images: ["/bennett-connect-preview.png"],
   },
   icons: {
     icon: [
