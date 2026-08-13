@@ -2,7 +2,7 @@
 
 Find the people on campus you should know.
 
-Bennett Connect is a mobile-first campus networking MVP for Bennett University students. It helps students create profiles, select interests and goals, discover relevant people, send connection requests, post "I need someone for..." requests, and chat with accepted connections.
+Bennett Connect is a mobile-first campus networking platform for Bennett University students. It helps students create profiles, select interests and goals, discover relevant people, send connection requests, post "I need someone for..." requests, and chat with accepted connections.
 
 ## Stack
 

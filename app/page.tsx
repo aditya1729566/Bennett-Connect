@@ -54,7 +54,7 @@ export default async function Home() {
     <PageShell>
       <main className="mx-auto grid min-h-[calc(100vh-56px)] max-w-6xl items-center gap-6 px-3 py-6 sm:px-4 sm:py-10 md:min-h-[calc(100vh-64px)] md:grid-cols-[1fr_0.9fr] md:gap-10 md:py-16">
         <section>
-          <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Bennett campus beta</p>
+          <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Bennett Connect</p>
           <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.04] text-zinc-950 sm:text-6xl">
             Find the people on campus you should know.
           </h1>

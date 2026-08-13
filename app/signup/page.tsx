@@ -61,7 +61,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: Prom
     <PageShell>
       <main className="mx-auto grid min-h-[calc(100svh-56px)] w-full max-w-6xl px-0 sm:min-h-[calc(100vh-64px)] sm:px-4 sm:py-10 lg:grid-cols-[1fr_440px] lg:items-center lg:gap-10">
         <section className="hidden lg:block">
-          <p className="text-sm font-black uppercase tracking-wide text-cyan-700">Campus beta</p>
+          <p className="text-sm font-black uppercase tracking-wide text-cyan-700">Bennett Connect</p>
           <h1 className="mt-3 max-w-xl text-5xl font-black leading-tight text-zinc-950">Find the students you should know before everyone else does.</h1>
           <p className="mt-5 max-w-lg text-lg leading-8 text-zinc-700">Start with Outlook, finish a quick profile, and let Bennett Connect recommend people around your goals, skills, and interests.</p>
           <div className="mt-8 max-w-xl rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
@@ -82,7 +82,7 @@ export default async function SignupPage({ searchParams }: { searchParams?: Prom
           </div>
 
           <div className="hidden sm:block">
-            <p className="text-sm font-black uppercase tracking-wide text-cyan-700">Campus beta</p>
+            <p className="text-sm font-black uppercase tracking-wide text-cyan-700">Bennett Connect</p>
             <h1 className="mt-2 text-3xl font-black text-zinc-950">Join your campus</h1>
             <p className="mt-2 text-sm leading-6 text-zinc-600">Create an account with your university email and finish your profile in under two minutes.</p>
           </div>

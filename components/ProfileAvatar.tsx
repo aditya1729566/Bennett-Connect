@@ -22,7 +22,7 @@ export function ProfileAvatar({ src, name, size = "md" }: ProfileAvatarProps) {
   const palette = palettes[paletteIndex];
 
   if (src) {
-    // Supabase avatar URLs are user-provided remote images, so keep rendering flexible for the MVP.
+    // Supabase avatar URLs are user-provided remote images, so keep rendering flexible.
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={src} alt={`${name} profile photo`} className={`${sizeClass} rounded-full border-2 border-white object-cover shadow-sm`} />;
   }
