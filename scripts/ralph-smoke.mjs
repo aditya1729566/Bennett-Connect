@@ -49,7 +49,7 @@ for (const key of ["NEXT_PUBLIC_VAPID_PUBLIC_KEY", "VAPID_PRIVATE_KEY", "VAPID_S
 
 const landing = read("app/page.tsx");
 check("landing features Aditya", landing.includes("Aditya Agrawal"));
-check("landing has Aditya username", landing.includes('FEATURED_USERNAME = "anarchistgoverner"'));
+check("landing has Aditya username", landing.includes('FEATURED_USERNAME = "anarchistgovernor"'));
 check("landing builds profile link", landing.includes("`/profile/${FEATURED_USERNAME}`"));
 check("landing links Aditya website", landing.includes("https://personal-website-bay-omega.vercel.app"));
 check("landing has working profile CTA", landing.includes("View profile"));
