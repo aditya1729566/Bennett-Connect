@@ -10,14 +10,11 @@ type ProfileCardProps = {
 };
 
 export function ProfileCard({ recommendation, actions }: ProfileCardProps) {
-  const { profile, score, reasons } = recommendation;
+  const { profile, score } = recommendation;
   const topSignal = profile.interests[0]?.name ?? profile.goals[0]?.title ?? profile.course ?? "Campus match";
 
   return (
     <article className="interactive-card group rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
-      <div className="absolute right-4 top-4 hidden rounded-full bg-orange-50 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-orange-700 sm:block">
-        {topSignal}
-      </div>
       <div className="relative flex items-start gap-3 sm:gap-4">
         <ProfileAvatar src={profile.avatar_url} name={profile.full_name} size="md" />
         <div className="min-w-0 flex-1">
@@ -30,7 +27,10 @@ export function ProfileCard({ recommendation, actions }: ProfileCardProps) {
                 {[profile.course, profile.year_of_study ?? profile.graduation_year].filter(Boolean).join(" • ")}
               </p>
             </div>
-            <div className="shrink-0">
+            <div className="flex shrink-0 items-center gap-3 self-start sm:flex-col sm:items-end">
+              <span className="hidden max-w-56 truncate rounded-full bg-orange-50 px-3 py-1 text-[11px] font-black uppercase tracking-wide text-orange-700 sm:block">
+                {topSignal}
+              </span>
               <MatchScore score={score} />
             </div>
           </div>
@@ -47,18 +47,6 @@ export function ProfileCard({ recommendation, actions }: ProfileCardProps) {
             {goal.title}
           </InterestBadge>
         ))}
-      </div>
-
-      <div className="relative mt-4 rounded-xl border border-zinc-100 bg-zinc-50 p-3">
-        <p className="text-xs font-black uppercase tracking-wide text-zinc-500">Why this could click</p>
-        <ul className="mt-2 space-y-1 text-sm leading-5 text-zinc-700">
-          {reasons.slice(0, 3).map((reason) => (
-            <li key={reason} className="flex gap-2">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-600" />
-              <span>{reason}</span>
-            </li>
-          ))}
-        </ul>
       </div>
 
       {actions ? <div className="relative mt-4 flex gap-2 sm:gap-3">{actions}</div> : null}
