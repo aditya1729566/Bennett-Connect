@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { interestOptions } from "@/lib/data/options";
+import { courseOptions, interestOptions } from "@/lib/data/options";
 import { slugify, usernameFromName } from "@/lib/data/slug";
 import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
 
@@ -12,6 +12,7 @@ function onboardingError(request: NextRequest, message: string) {
 }
 
 const genderOptions = new Set(["male", "female", "non_binary", "prefer_not_to_say"]);
+const allowedCourses = new Set<string>(courseOptions);
 
 export async function POST(request: NextRequest) {
   const user = await getUser();
@@ -36,6 +37,10 @@ export async function POST(request: NextRequest) {
 
   if (!fullName || !course || !graduationYear) {
     return onboardingError(request, "Full name, course, and graduation year are required.");
+  }
+
+  if (!allowedCourses.has(course)) {
+    return onboardingError(request, "Choose a valid Bennett University course from the dropdown.");
   }
 
   if (genderInput && !gender) {

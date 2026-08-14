@@ -1,7 +1,7 @@
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SetupNotice } from "@/components/SetupNotice";
-import { goalOptions, interestOptions, yearOptions } from "@/lib/data/options";
+import { courseOptionGroups, goalOptions, interestOptions, yearOptions } from "@/lib/data/options";
 import { getProfileById } from "@/lib/data/profiles";
 import { slugify } from "@/lib/data/slug";
 import { createClient, requireUser } from "@/lib/supabase/server";
@@ -44,7 +44,18 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Course / branch
-              <input name="course" required placeholder="CSE" defaultValue={profile?.course ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <select name="course" required defaultValue={profile?.course ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 outline-none focus:border-cyan-600">
+                <option value="">Choose your course</option>
+                {courseOptionGroups.map((group) => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map((course) => (
+                      <option key={course} value={course}>
+                        {course}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Graduation year

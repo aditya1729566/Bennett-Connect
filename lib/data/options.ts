@@ -81,3 +81,132 @@ export const requestCategories = [
 ];
 
 export const yearOptions = ["First Year", "Second Year", "Third Year", "Fourth Year", "Postgraduate"];
+
+export const courseOptionGroups = [
+  {
+    label: "Artificial Intelligence",
+    options: [
+      "B.Tech (Artificial Intelligence)",
+      "BCA (Artificial Intelligence)",
+      "B.Sc. (Artificial Intelligence)",
+      "M.Tech (Artificial Intelligence)",
+      "M.Sc. (Artificial Intelligence)",
+      "MCA (Artificial Intelligence)",
+      "PG Diploma AI in Healthcare",
+    ],
+  },
+  {
+    label: "Engineering",
+    options: [
+      "B.Tech (Computer Science Engineering)",
+      "B.Tech (Electronics & Communication Engineering)",
+      "B.Tech (Electronics & Computer Engineering)",
+      "B.Tech (Mechanical Engineering)",
+      "B.Tech (Engineering Physics)",
+      "B.Tech (Biotechnology)",
+      "B.Tech + M.Tech (Biotech) (Dual Degree)",
+      "B.Tech + M.Tech (Computer Science & Engineering) (Dual Degree)",
+      "BCA",
+      "BCA + MCA (Dual Degree)",
+      "MCA",
+      "M.Tech (Computer Science Engineering)",
+      "M.Tech (Biotech)",
+      "M.Tech (Material Science & Engineering)",
+      "M.Tech Electronics and Communication Engineering (VLSI Design and Technology)",
+      "M.Tech (Computer Science & Engineering) + Ph.D. (Dual Degree)",
+    ],
+  },
+  {
+    label: "Liberal Arts",
+    options: [
+      "B.A. (Hons.) Liberal Arts",
+      "B.A. (Hons.) Psychology",
+      "B.A. (Hons.) Economics",
+      "B.A. (Hons.) English Literature",
+      "B.A. (Hons.) Sociology",
+      "B.A. (Hons.) Philosophy",
+      "B.A. (Hons.) Business Studies",
+      "B.A. (Hons.) Political Science & International Relations",
+      "Master's in Economics",
+    ],
+  },
+  {
+    label: "Management",
+    options: [
+      "BBA",
+      "BBA + MBA (Dual Degree)",
+      "B.Com (Finance & Accounting)",
+      "B.Com (International Accounting & Finance) Integrated with ACCA",
+      "MBA",
+      "MBA (Marketing)",
+      "MBA (Business Analytics)",
+      "MBA (Finance)",
+      "MBA (Human Resource)",
+      "MBA (Media)",
+      "MBA (Logistics & Supply Chain)",
+      "MBA (Production & Operations)",
+      "MBA (Healthcare)",
+      "MBA (Sports)",
+      "MBA (Entrepreneurship & Family Business)",
+    ],
+  },
+  {
+    label: "Media",
+    options: [
+      "B.A. Mass Communication",
+      "BA Film, TV & Web Series",
+      "M.A. Mass Communication",
+      "PG Diploma in TV & Digital Journalism",
+    ],
+  },
+  {
+    label: "Law",
+    options: ["Integ. BBA LL.B. (Hons.)", "Integ. B.A. LL.B. (Hons.)", "LL.M."],
+  },
+  {
+    label: "Design",
+    options: [
+      "B.Des (Hons.)",
+      "B.Des (Hons.) Fashion Design",
+      "B.Des (Hons.) Intelligent Textile Design",
+      "B.Des (Hons.) Product Design with AI",
+      "B.Des (Hons.) Game Design",
+      "B.Des (Hons.) Advanced Animation & VFX in partnership with CII",
+      "B.Des (Hons.) Communication Design",
+      "M.Des (Communication Design)",
+    ],
+  },
+  {
+    label: "Global Pathways",
+    options: [
+      "B.Tech (CSE) Global (2+2) - Iowa State University, USA",
+      "B.Tech (CSE) Global (2+2 or 3+1) - University of Essex, UK",
+      "B.Tech CSE Global (2+1+1)",
+      "BBA Global (2+1) - University of Essex, UK",
+      "BBA Global (1+1+1)",
+      "BA Global - Liberal Arts (2+1)",
+      "BA Global - Film, TV & Web Series/Mass Comm. (2+1)",
+      "Bachelor of Design (B.Des) Global - Fashion Design (2+2)",
+    ],
+  },
+  {
+    label: "Industry Integrated Programs",
+    options: [
+      "B.Tech (Electronics Engineering) VLSI Design and Technology",
+      "B.Tech (Mechanical Engineering) Smart Manufacturing",
+      "B.Tech (Computer Science Engineering) AI Techniques and ML Algorithms",
+      "B.Tech CSE Cyber Security",
+      "BBA (Gen AI)",
+      "BBA (Data Analytics)",
+      "MBA (Data Science & Business Analytics)",
+      "MBA (Strategy, Management & Consulting)",
+      "M.A. in Public Policy",
+    ],
+  },
+  {
+    label: "Doctoral Programs",
+    options: ["Ph.D. (Doctor of Philosophy)"],
+  },
+] as const;
+
+export const courseOptions = courseOptionGroups.flatMap((group) => group.options);
