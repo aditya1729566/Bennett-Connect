@@ -1,7 +1,7 @@
 import { PageShell } from "@/components/PageShell";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SetupNotice } from "@/components/SetupNotice";
-import { courseOptionGroups, goalOptions, interestOptions, yearOptions } from "@/lib/data/options";
+import { courseOptionGroups, goalOptions, hostelOptions, interestOptions, yearOptions } from "@/lib/data/options";
 import { getProfileById } from "@/lib/data/profiles";
 import { slugify } from "@/lib/data/slug";
 import { createClient, requireUser } from "@/lib/supabase/server";
@@ -89,7 +89,14 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Hostel
-              <input name="hostel" maxLength={2} placeholder="Eg. C8" defaultValue={profile?.hostel ?? ""} className="mt-2 w-full uppercase rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <select name="hostel" defaultValue={profile?.hostel ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 outline-none focus:border-cyan-600">
+                <option value="">Choose hostel</option>
+                {hostelOptions.map((hostel) => (
+                  <option key={hostel} value={hostel}>
+                    {hostel}
+                  </option>
+                ))}
+              </select>
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Room no.

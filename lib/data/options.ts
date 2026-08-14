@@ -82,6 +82,24 @@ export const requestCategories = [
 
 export const yearOptions = ["First Year", "Second Year", "Third Year", "Fourth Year", "Postgraduate"];
 
+export const hostelOptions = [
+  "C1",
+  "C2",
+  "C3",
+  "C4",
+  "C5",
+  "C6",
+  "C7",
+  "C8",
+  "D1",
+  "D2",
+  "D3",
+  "D4",
+  "D5",
+  "D6",
+  "E1",
+];
+
 export const courseOptionGroups = [
   {
     label: "Artificial Intelligence",

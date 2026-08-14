@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { courseOptions, interestOptions } from "@/lib/data/options";
+import { courseOptions, hostelOptions, interestOptions } from "@/lib/data/options";
 import { slugify, usernameFromName } from "@/lib/data/slug";
 import { createAdminClient, createClient, getUser } from "@/lib/supabase/server";
 
@@ -13,6 +13,7 @@ function onboardingError(request: NextRequest, message: string) {
 
 const genderOptions = new Set(["male", "female", "non_binary", "prefer_not_to_say"]);
 const allowedCourses = new Set<string>(courseOptions);
+const allowedHostels = new Set<string>(hostelOptions);
 
 export async function POST(request: NextRequest) {
   const user = await getUser();
@@ -51,8 +52,8 @@ export async function POST(request: NextRequest) {
     return onboardingError(request, "Hostel and room number are required so students can find you on campus.");
   }
 
-  if (residenceType === "hostel" && hostel.length > 2) {
-    return onboardingError(request, "Hostel must be a short 2-character code, like C8.");
+  if (residenceType === "hostel" && !allowedHostels.has(hostel)) {
+    return onboardingError(request, "Choose a valid hostel from the dropdown.");
   }
 
   if (residenceType === "hostel" && roomNo.length > 20) {
