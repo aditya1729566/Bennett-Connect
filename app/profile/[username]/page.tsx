@@ -9,6 +9,59 @@ import { getProfileById, getProfileByUsername } from "@/lib/data/profiles";
 import { notifyUser } from "@/lib/notifications/push";
 import { createAdminClient, createClient, getUser, requireUser } from "@/lib/supabase/server";
 
+function SocialIcon({ kind }: { kind: "github" | "linkedin" | "instagram" | "x" | "codeforces" }) {
+  if (kind === "github") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-current">
+        <path d="M12 .7a11.3 11.3 0 0 0-3.6 22c.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.2 1.7 1.2 1 .1.7 2.5 2.7 1.8.1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.6 0-1.2.4-2.2 1.2-3-.1-.3-.5-1.5.1-3 0 0 .9-.3 3.1 1.1A10.7 10.7 0 0 1 12 6.9c1 0 1.9.1 2.8.4 2.2-1.4 3.1-1.1 3.1-1.1.6 1.5.2 2.7.1 3 .7.8 1.2 1.8 1.2 3 0 4.3-2.7 5.3-5.3 5.6.4.4.8 1.1.8 2.2v3.1c0 .4.2.7.8.6A11.3 11.3 0 0 0 12 .7Z" />
+      </svg>
+    );
+  }
+
+  if (kind === "linkedin") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-current">
+        <path d="M20.4 20.4h-3.6v-5.7c0-1.4 0-3.1-1.9-3.1s-2.2 1.5-2.2 3v5.8H9.1V8.8h3.5v1.6h.1c.5-.9 1.6-1.9 3.4-1.9 3.7 0 4.3 2.4 4.3 5.5v6.4ZM5.1 7.2a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2Zm1.8 13.2H3.3V8.8h3.6v11.6ZM22.2 0H1.8C.8 0 0 .8 0 1.8v20.4c0 1 .8 1.8 1.8 1.8h20.4c1 0 1.8-.8 1.8-1.8V1.8c0-1-.8-1.8-1.8-1.8Z" />
+      </svg>
+    );
+  }
+
+  if (kind === "instagram") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-none stroke-current stroke-2">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <path d="M17.5 6.5h.01" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (kind === "x") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-current">
+        <path d="M14.3 10.2 22.7 0h-2l-7.3 8.8L7.6 0H.9l8.8 13.1L.9 24h2l7.7-9.4 6.2 9.4h6.7l-9.2-13.8Zm-2.7 3.3-.9-1.3L3.6 1.5h3l5.7 8.6.9 1.3 7.5 11.2h-3l-6.1-9.1Z" />
+      </svg>
+    );
+  }
+
+  return <span aria-hidden="true" className="text-xs font-black tracking-tight">CF</span>;
+}
+
+function SocialIconLink({ href, label, kind }: { href: string; label: string; kind: "github" | "linkedin" | "instagram" | "x" | "codeforces" }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={label}
+      title={label}
+      className="pressable inline-flex h-11 w-11 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-900 shadow-sm hover:border-cyan-300 hover:text-cyan-800"
+    >
+      <SocialIcon kind={kind} />
+    </a>
+  );
+}
+
 async function connect(formData: FormData) {
   "use server";
 
@@ -163,11 +216,15 @@ export default async function ProfilePage({
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-3 text-sm font-black">
-            {profile.github_url ? <Link href={profile.github_url} className="rounded-full border border-zinc-300 px-4 py-2">GitHub</Link> : null}
-            {profile.linkedin_url ? <Link href={profile.linkedin_url} className="rounded-full border border-zinc-300 px-4 py-2">LinkedIn</Link> : null}
-            {profile.codeforces_handle ? <span className="rounded-full border border-zinc-300 px-4 py-2">Codeforces: {profile.codeforces_handle}</span> : null}
-          </div>
+          {profile.github_url || profile.linkedin_url || profile.instagram_url || profile.x_url || profile.codeforces_handle ? (
+            <div className="mt-6 flex flex-wrap gap-3">
+              {profile.github_url ? <SocialIconLink href={profile.github_url} label="Open GitHub profile" kind="github" /> : null}
+              {profile.linkedin_url ? <SocialIconLink href={profile.linkedin_url} label="Open LinkedIn profile" kind="linkedin" /> : null}
+              {profile.instagram_url ? <SocialIconLink href={profile.instagram_url} label="Open Instagram profile" kind="instagram" /> : null}
+              {profile.x_url ? <SocialIconLink href={profile.x_url} label="Open X profile" kind="x" /> : null}
+              {profile.codeforces_handle ? <SocialIconLink href={`https://codeforces.com/profile/${profile.codeforces_handle}`} label="Open Codeforces profile" kind="codeforces" /> : null}
+            </div>
+          ) : null}
 
           {!user ? (
             <div className="mt-6 grid gap-3 sm:grid-cols-2">

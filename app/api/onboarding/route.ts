@@ -95,6 +95,8 @@ export async function POST(request: NextRequest) {
     bio: String(formData.get("bio") ?? "").trim() || null,
     github_url: String(formData.get("github_url") ?? "").trim() || null,
     linkedin_url: String(formData.get("linkedin_url") ?? "").trim() || null,
+    instagram_url: String(formData.get("instagram_url") ?? "").trim() || null,
+    x_url: String(formData.get("x_url") ?? "").trim() || null,
     codeforces_handle: String(formData.get("codeforces_handle") ?? "").trim() || null,
   });
 

@@ -35,6 +35,8 @@ export type Profile = {
   bio: string | null;
   github_url: string | null;
   linkedin_url: string | null;
+  instagram_url: string | null;
+  x_url: string | null;
   codeforces_handle: string | null;
   interests: Interest[];
   goals: Goal[];

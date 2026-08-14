@@ -67,7 +67,7 @@ export default async function Home() {
               {user ? "Open Discover" : "Join your campus"}
             </Link>
             <Link href={profileHref} className="pressable rounded-full border border-zinc-300 bg-white px-6 py-3 text-center text-sm font-black text-zinc-900 shadow-sm hover:border-zinc-400">
-              Meet Aditya
+              Meet the CEO
             </Link>
           </div>
           <div className="mt-6 grid gap-3 text-sm text-zinc-700 sm:mt-10 sm:grid-cols-3">

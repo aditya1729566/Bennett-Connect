@@ -20,6 +20,8 @@ type RawProfile = {
   bio: string | null;
   github_url: string | null;
   linkedin_url: string | null;
+  instagram_url: string | null;
+  x_url: string | null;
   codeforces_handle: string | null;
   universities?: { name: string | null } | null;
   user_interests?: { interests: Interest | null }[];
@@ -48,6 +50,8 @@ const profileSelect = `
   bio,
   github_url,
   linkedin_url,
+  instagram_url,
+  x_url,
   codeforces_handle,
   universities(name),
   user_interests(interests(id,name,slug)),
@@ -74,6 +78,8 @@ export function mapProfile(raw: RawProfile): Profile {
     bio: raw.bio,
     github_url: raw.github_url,
     linkedin_url: raw.linkedin_url,
+    instagram_url: raw.instagram_url,
+    x_url: raw.x_url,
     codeforces_handle: raw.codeforces_handle,
     interests: raw.user_interests?.map((row) => row.interests).filter(present) ?? [],
     goals: raw.user_goals?.map((row) => row.goals).filter(present) ?? [],

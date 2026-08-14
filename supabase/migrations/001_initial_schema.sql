@@ -30,6 +30,8 @@ create table public.profiles (
   bio text check (char_length(coalesce(bio, '')) <= 280),
   github_url text,
   linkedin_url text,
+  instagram_url text,
+  x_url text,
   codeforces_handle text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

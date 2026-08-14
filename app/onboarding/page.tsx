@@ -149,8 +149,8 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
             <input name="custom_goal" placeholder="Add a goal if yours is missing" className="mt-3 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
           </section>
 
-          <section className="grid gap-4 sm:grid-cols-3">
-            <label className="block text-sm font-bold text-zinc-700 sm:col-span-3">
+          <section className="grid gap-4 sm:grid-cols-2">
+            <label className="block text-sm font-bold text-zinc-700 sm:col-span-2">
               Bio
               <textarea name="bio" rows={4} placeholder="Tell people what you're working on." defaultValue={profile?.bio ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
@@ -161,6 +161,14 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
             <label className="block text-sm font-bold text-zinc-700">
               LinkedIn
               <input name="linkedin_url" placeholder="https://linkedin.com/in/..." defaultValue={profile?.linkedin_url ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+            </label>
+            <label className="block text-sm font-bold text-zinc-700">
+              Instagram
+              <input name="instagram_url" placeholder="https://instagram.com/..." defaultValue={profile?.instagram_url ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+            </label>
+            <label className="block text-sm font-bold text-zinc-700">
+              X
+              <input name="x_url" placeholder="https://x.com/..." defaultValue={profile?.x_url ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Codeforces
