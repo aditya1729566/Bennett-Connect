@@ -14,6 +14,7 @@ function onboardingError(request: NextRequest, message: string) {
 const genderOptions = new Set(["male", "female", "non_binary", "prefer_not_to_say"]);
 const allowedCourses = new Set<string>(courseOptions);
 const allowedHostels = new Set<string>(hostelOptions);
+const MAX_BIO_LENGTH = 280;
 
 function normalizeSocialHandle(value: FormDataEntryValue | null) {
   const input = String(value ?? "").trim().replace(/^@+/, "");
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
   const graduationYear = Number(formData.get("graduation_year"));
   const selectedInterestSlugs = formData.getAll("interests").map(String);
   const selectedGoalSlugs = formData.getAll("goals").map(String);
+  const bio = String(formData.get("bio") ?? "").trim();
 
   if (!fullName || !course || !graduationYear) {
     return onboardingError(request, "Full name, course, and graduation year are required.");
@@ -79,6 +81,10 @@ export async function POST(request: NextRequest) {
 
   if (residenceType === "hostel" && roomNo.length > 20) {
     return onboardingError(request, "Room number must be 20 characters or fewer.");
+  }
+
+  if (bio.length > MAX_BIO_LENGTH) {
+    return onboardingError(request, `Bio must be ${MAX_BIO_LENGTH} characters or fewer.`);
   }
 
   const customInterest = String(formData.get("custom_interest") ?? "").trim();
@@ -112,7 +118,7 @@ export async function POST(request: NextRequest) {
     hostel: residenceType === "hostel" ? hostel : null,
     room_no: residenceType === "hostel" ? roomNo : null,
     show_room_publicly: residenceType === "hostel" ? showRoomPublicly : false,
-    bio: String(formData.get("bio") ?? "").trim() || null,
+    bio: bio || null,
     github_url: String(formData.get("github_url") ?? "").trim() || null,
     linkedin_url: String(formData.get("linkedin_url") ?? "").trim() || null,
     instagram_url: normalizeSocialHandle(formData.get("instagram_url")),
@@ -121,6 +127,10 @@ export async function POST(request: NextRequest) {
   });
 
   if (profileError) {
+    if (profileError.message.includes("profiles_bio_check")) {
+      return onboardingError(request, `Bio must be ${MAX_BIO_LENGTH} characters or fewer.`);
+    }
+
     return onboardingError(request, profileError.message);
   }
 

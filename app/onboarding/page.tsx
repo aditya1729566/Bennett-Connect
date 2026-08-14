@@ -152,7 +152,15 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
           <section className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-bold text-zinc-700 sm:col-span-2">
               Bio
-              <textarea name="bio" rows={4} placeholder="Tell people what you're working on." defaultValue={profile?.bio ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              <textarea
+                name="bio"
+                rows={4}
+                maxLength={280}
+                placeholder="Tell people what you're working on."
+                defaultValue={profile?.bio ?? ""}
+                className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600"
+              />
+              <span className="mt-1 block text-xs font-semibold text-zinc-500">Keep it short: 280 characters max.</span>
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               GitHub
