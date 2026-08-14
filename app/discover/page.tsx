@@ -79,9 +79,9 @@ export default async function DiscoverPage({ searchParams }: { searchParams?: Pr
 
   return (
     <PageShell>
-      <main className="mx-auto grid max-w-6xl gap-5 px-3 py-5 sm:px-4 sm:py-8 lg:grid-cols-[320px_1fr]">
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
+      <main className="mx-auto grid w-full min-w-0 max-w-6xl gap-5 px-3 py-5 sm:px-4 sm:py-8 lg:grid-cols-[320px_1fr]">
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+          <div className="motion-rise min-w-0 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
             <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Discover people</p>
             <h1 className="mt-2 text-2xl font-black leading-tight text-zinc-950 sm:text-4xl lg:text-3xl">The students worth meeting next.</h1>
             <p className="mt-3 text-sm leading-6 text-zinc-600 sm:text-base">Sorted by shared interests, goals, skills, course, year, and hostel.</p>
@@ -115,7 +115,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams?: Pr
           </div>
         </aside>
 
-        <section className="space-y-3 sm:space-y-4">
+        <section className="min-w-0 space-y-3 sm:space-y-4">
           {params?.connected ? <p className="rounded-lg bg-emerald-50 p-3 text-sm font-semibold text-emerald-800">Connection request sent.</p> : null}
           {params?.skipped ? <p className="rounded-lg bg-cyan-50 p-3 text-sm font-semibold text-cyan-800">Skipped. The next recommendation is ready.</p> : null}
           {params?.error ? <p className="rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{params.error}</p> : null}
