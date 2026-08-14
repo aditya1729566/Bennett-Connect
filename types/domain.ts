@@ -31,6 +31,7 @@ export type Profile = {
   residence_type: "hostel" | "day_scholar" | null;
   hostel: string | null;
   room_no: string | null;
+  show_room_publicly: boolean;
   bio: string | null;
   github_url: string | null;
   linkedin_url: string | null;

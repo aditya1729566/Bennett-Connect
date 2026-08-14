@@ -16,6 +16,7 @@ type RawProfile = {
   residence_type: "hostel" | "day_scholar" | null;
   hostel: string | null;
   room_no: string | null;
+  show_room_publicly: boolean | null;
   bio: string | null;
   github_url: string | null;
   linkedin_url: string | null;
@@ -43,6 +44,7 @@ const profileSelect = `
   residence_type,
   hostel,
   room_no,
+  show_room_publicly,
   bio,
   github_url,
   linkedin_url,
@@ -68,6 +70,7 @@ export function mapProfile(raw: RawProfile): Profile {
     residence_type: raw.residence_type,
     hostel: raw.hostel,
     room_no: raw.room_no,
+    show_room_publicly: Boolean(raw.show_room_publicly),
     bio: raw.bio,
     github_url: raw.github_url,
     linkedin_url: raw.linkedin_url,

@@ -32,6 +32,7 @@ export async function POST(request: NextRequest) {
   const residenceType = String(formData.get("residence_type") ?? "hostel") === "day_scholar" ? "day_scholar" : "hostel";
   const hostel = String(formData.get("hostel") ?? "").trim().toUpperCase();
   const roomNo = String(formData.get("room_no") ?? "").trim();
+  const showRoomPublicly = formData.get("show_room_publicly") === "true";
   const graduationYear = Number(formData.get("graduation_year"));
   const selectedInterestSlugs = formData.getAll("interests").map(String);
   const selectedGoalSlugs = formData.getAll("goals").map(String);
@@ -90,6 +91,7 @@ export async function POST(request: NextRequest) {
     residence_type: residenceType,
     hostel: residenceType === "hostel" ? hostel : null,
     room_no: residenceType === "hostel" ? roomNo : null,
+    show_room_publicly: residenceType === "hostel" ? showRoomPublicly : false,
     bio: String(formData.get("bio") ?? "").trim() || null,
     github_url: String(formData.get("github_url") ?? "").trim() || null,
     linkedin_url: String(formData.get("linkedin_url") ?? "").trim() || null,

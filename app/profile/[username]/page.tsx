@@ -113,6 +113,10 @@ export default async function ProfilePage({
   }
 
   const isOwnProfile = profile.id === user?.id;
+  const showLocation = profile.residence_type === "day_scholar" || isOwnProfile || profile.show_room_publicly;
+  const profileMeta = [profile.course, profile.year_of_study ?? profile.graduation_year, showLocation ? (profile.residence_type === "day_scholar" ? "Day scholar" : profile.hostel) : null]
+    .filter(Boolean)
+    .join(" • ");
 
   return (
     <PageShell>
@@ -130,12 +134,15 @@ export default async function ProfilePage({
               <h1 className="mt-2 break-words text-3xl font-black leading-tight text-zinc-950 sm:text-4xl">{profile.full_name}</h1>
               <p className="mt-2 text-sm font-semibold text-zinc-500">@{profile.username}</p>
               <p className="mt-3 text-sm leading-6 text-zinc-700 sm:text-base">
-                {[profile.course, profile.year_of_study ?? profile.graduation_year, profile.residence_type === "day_scholar" ? "Day scholar" : profile.hostel].filter(Boolean).join(" • ")}
+                {profileMeta}
               </p>
-              {profile.room_no ? (
+              {showLocation && profile.room_no ? (
                 <p className="mt-2 inline-flex rounded-full border border-cyan-100 bg-cyan-50 px-3 py-1.5 text-sm font-black text-cyan-800">
                   Room {profile.room_no}
                 </p>
+              ) : null}
+              {isOwnProfile && profile.residence_type === "hostel" && profile.hostel && profile.room_no && !profile.show_room_publicly ? (
+                <p className="mt-2 text-xs font-bold text-zinc-500">Your hostel and room are hidden from other students.</p>
               ) : null}
               {profile.bio ? <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-zinc-700 sm:text-base">{profile.bio}</p> : null}
             </div>

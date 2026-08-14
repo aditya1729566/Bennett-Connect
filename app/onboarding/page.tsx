@@ -102,6 +102,13 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
               Room no.
               <input name="room_no" maxLength={20} placeholder="Eg. 312" defaultValue={profile?.room_no ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
+            <label className="flex items-start gap-3 rounded-lg border border-zinc-200 bg-white/80 p-4 text-sm font-bold text-zinc-700 sm:col-span-2">
+              <input name="show_room_publicly" type="checkbox" value="true" defaultChecked={profile?.show_room_publicly ?? false} className="mt-1 h-4 w-4 rounded border-zinc-300 text-cyan-700 focus:ring-cyan-600" />
+              <span>
+                Show my hostel and room on my public profile
+                <span className="mt-1 block text-xs font-semibold leading-5 text-zinc-500">If this is off, your location still helps matching but other students will not see your hostel or room.</span>
+              </span>
+            </label>
           </section>
 
           <section>
