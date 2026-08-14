@@ -16,18 +16,22 @@ const allowedCourses = new Set<string>(courseOptions);
 const allowedHostels = new Set<string>(hostelOptions);
 
 function normalizeSocialHandle(value: FormDataEntryValue | null) {
-  const input = String(value ?? "").trim();
+  const input = String(value ?? "").trim().replace(/^@+/, "");
   if (!input) {
     return null;
   }
 
-  const withoutAt = input.replace(/^@+/, "");
+  const compactInput = input.split("?")[0].replace(/\/+$/, "");
+  if (!/^https?:\/\//i.test(compactInput) && !compactInput.includes("/")) {
+    return compactInput;
+  }
+
   try {
-    const parsed = new URL(withoutAt.startsWith("http") ? withoutAt : `https://${withoutAt}`);
+    const parsed = new URL(/^https?:\/\//i.test(input) ? input : `https://${input}`);
     const [handle] = parsed.pathname.split("/").filter(Boolean);
     return handle?.replace(/^@+/, "") || null;
   } catch {
-    return withoutAt.split("/").filter(Boolean).pop()?.split("?")[0] || null;
+    return compactInput.split("/").filter(Boolean).pop()?.replace(/^@+/, "") || null;
   }
 }
 
