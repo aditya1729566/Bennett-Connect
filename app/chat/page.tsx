@@ -69,7 +69,7 @@ export default async function ChatPage() {
   return (
     <PageShell>
       <main className="mx-auto max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
-        <div className="mb-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:mb-6 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
+        <div className="motion-rise mb-5 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:mb-6 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
           <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Chat</p>
           <h1 className="mt-2 text-2xl font-black leading-tight text-zinc-950 sm:text-4xl">Talk after you connect.</h1>
           <p className="mt-3 text-sm leading-6 text-zinc-600 sm:text-base">Messages are available only between students with an accepted connection.</p>
@@ -89,7 +89,7 @@ export default async function ChatPage() {
                 <Link
                   key={conversation.id}
                   href={`/chat/${conversation.id}`}
-                  className="flex items-center gap-3 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm hover:border-cyan-300 sm:gap-4"
+                  className="motion-rise interactive-card flex items-center gap-3 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur hover:border-cyan-300 sm:gap-4"
                 >
                   <ProfileAvatar src={person.avatar_url} name={person.full_name} size="md" />
                   <span className="min-w-0 flex-1">
@@ -103,7 +103,7 @@ export default async function ChatPage() {
               );
             })
           ) : (
-            <div className="rounded-lg border border-zinc-200 bg-white p-6 text-center shadow-sm">
+            <div className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-6 text-center shadow-sm backdrop-blur">
               <h2 className="text-2xl font-black text-zinc-950">No chats yet</h2>
               <p className="mt-2 text-sm leading-6 text-zinc-600">Accept a connection request first, then your conversation will appear here.</p>
               <Link href="/connections" className="mt-5 inline-flex rounded-full bg-zinc-950 px-5 py-3 text-sm font-black text-white">

@@ -21,7 +21,7 @@ function relativeTime(value: string) {
 
 export function RequestCard({ request, action }: RequestCardProps) {
   return (
-    <article className="interactive-card rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+    <article className="interactive-card motion-rise rounded-xl border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
       <div className="relative flex items-start justify-between gap-3 sm:gap-4">
         <div className="min-w-0">
           <p className="inline-flex rounded-full bg-cyan-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-cyan-700">{request.category}</p>

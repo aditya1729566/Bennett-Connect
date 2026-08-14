@@ -122,7 +122,7 @@ export default async function ProfilePage({
         {query?.blocked ? <p className="mb-4 rounded-lg bg-cyan-50 p-3 text-sm font-semibold text-cyan-800">Profile blocked. They will not appear in discovery.</p> : null}
         {query?.error ? <p className="mb-4 rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{query.error}</p> : null}
 
-        <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
+        <section className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-6">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
             <ProfileAvatar src={profile.avatar_url} name={profile.full_name} size="lg" />
             <div className="min-w-0 flex-1">
@@ -192,7 +192,7 @@ export default async function ProfilePage({
         </section>
 
         {user && !isOwnProfile ? (
-          <form action={reportProfile} className="mt-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+          <form action={reportProfile} className="motion-rise mt-5 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
             <h2 className="text-lg font-black text-zinc-950">Report profile</h2>
             <input type="hidden" name="reported_user_id" value={profile.id} />
             <input type="hidden" name="username" value={profile.username} />

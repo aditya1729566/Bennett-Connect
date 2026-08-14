@@ -21,7 +21,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
   return (
     <PageShell>
       <main className="mx-auto max-w-3xl px-3 py-5 sm:px-4 sm:py-8">
-        <div className="mb-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:mb-6 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
+        <div className="motion-rise mb-5 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:mb-6 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
           <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">{isEditing ? "Edit profile" : "Two-minute profile"}</p>
           <h1 className="mt-2 text-2xl font-black leading-tight text-zinc-950 sm:text-4xl">{isEditing ? "Tune your campus signal." : "Help the right people find you."}</h1>
           <p className="mt-3 text-sm leading-6 text-zinc-600 sm:text-base">
@@ -32,7 +32,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
         <SetupNotice />
         {params?.error ? <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700">{params.error}</p> : null}
 
-        <form action="/api/onboarding" method="post" className="mt-5 space-y-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:mt-6 sm:p-5">
+        <form action="/api/onboarding" method="post" className="motion-rise mt-5 space-y-5 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:mt-6 sm:p-5">
           <section className="grid gap-4 sm:grid-cols-2">
             <label className="block text-sm font-bold text-zinc-700">
               Full name

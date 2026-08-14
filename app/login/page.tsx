@@ -42,7 +42,7 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
   return (
     <PageShell>
       <main className="mx-auto grid min-h-[calc(100svh-56px)] w-full max-w-6xl px-0 sm:min-h-[calc(100vh-64px)] sm:px-4 sm:py-10 lg:grid-cols-[1fr_440px] lg:items-center lg:gap-10">
-        <section className="hidden lg:block">
+        <section className="motion-rise hidden lg:block">
           <p className="text-sm font-black uppercase tracking-wide text-cyan-700">Bennett Connect</p>
           <h1 className="mt-3 max-w-xl text-5xl font-black leading-tight text-zinc-950">Your campus network, one Outlook tap away.</h1>
           <p className="mt-5 max-w-lg text-lg leading-8 text-zinc-700">Use your Bennett Microsoft account to get back to discovery, requests, connections, and chats without fighting another password box.</p>
@@ -62,7 +62,7 @@ export default async function LoginPage({ searchParams }: { searchParams?: Promi
           </div>
         </section>
 
-        <section className="flex min-h-[calc(100svh-56px)] flex-col bg-white px-5 py-6 sm:min-h-0 sm:rounded-2xl sm:border sm:border-zinc-200 sm:p-6 sm:shadow-sm">
+        <section className="motion-rise flex min-h-[calc(100svh-56px)] flex-col bg-white/92 px-5 py-6 backdrop-blur sm:min-h-0 sm:rounded-2xl sm:border sm:border-zinc-200 sm:p-6 sm:shadow-sm">
           <div className="sm:hidden">
             <p className="text-xs font-black uppercase tracking-wide text-cyan-700">Bennett Connect</p>
             <h1 className="mt-3 text-4xl font-black leading-tight text-zinc-950">Welcome back.</h1>

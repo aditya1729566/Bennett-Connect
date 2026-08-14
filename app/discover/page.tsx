@@ -81,7 +81,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams?: Pr
     <PageShell>
       <main className="mx-auto grid max-w-6xl gap-5 px-3 py-5 sm:px-4 sm:py-8 lg:grid-cols-[320px_1fr]">
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
             <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Discover people</p>
             <h1 className="mt-2 text-2xl font-black leading-tight text-zinc-950 sm:text-4xl lg:text-3xl">The students worth meeting next.</h1>
             <p className="mt-3 text-sm leading-6 text-zinc-600 sm:text-base">Sorted by shared interests, goals, skills, course, year, and hostel.</p>
@@ -143,7 +143,7 @@ export default async function DiscoverPage({ searchParams }: { searchParams?: Pr
                 />
               ))
             : (
-                <div className="rounded-lg border border-zinc-200 bg-white p-6 text-center shadow-sm">
+                <div className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-6 text-center shadow-sm backdrop-blur">
                   <h2 className="text-2xl font-black text-zinc-950">No recommendations yet</h2>
                   <p className="mt-2 text-sm leading-6 text-zinc-600">Once more students finish profiles, your best matches will show up here.</p>
                 </div>

@@ -127,7 +127,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ con
   return (
     <PageShell>
       <main className="mx-auto flex min-h-[calc(100vh-8.75rem)] max-w-3xl flex-col px-3 py-4 sm:min-h-[calc(100vh-64px)] sm:px-4 sm:py-6">
-        <header className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
+        <header className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur">
           <Link href="/chat" className="text-sm font-black text-cyan-700">
             Back to chats
           </Link>
@@ -140,7 +140,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ con
           </div>
         </header>
 
-        <section className="mt-3 flex-1 space-y-3 overflow-hidden rounded-lg border border-zinc-200 bg-white p-3 shadow-sm sm:mt-4 sm:p-4">
+        <section className="motion-rise mt-3 flex-1 space-y-3 overflow-hidden rounded-lg border border-zinc-200 bg-white/92 p-3 shadow-sm backdrop-blur sm:mt-4 sm:p-4">
           {messages.length > 0 ? (
             messages.map((message) => {
               const mine = message.sender_id === user.id;
@@ -163,7 +163,7 @@ export default async function ChatThreadPage({ params }: { params: Promise<{ con
           )}
         </section>
 
-        <form action={sendMessage} className="sticky bottom-[5.25rem] mt-3 rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-[0_16px_50px_rgba(15,23,42,0.14)] backdrop-blur-xl sm:bottom-4 sm:mt-4 sm:rounded-lg sm:p-3">
+        <form action={sendMessage} className="motion-rise sticky bottom-[5.25rem] mt-3 rounded-2xl border border-zinc-200 bg-white/95 p-2 shadow-[0_16px_50px_rgba(15,23,42,0.14)] backdrop-blur-xl sm:bottom-4 sm:mt-4 sm:rounded-lg sm:p-3">
           <input type="hidden" name="connection_id" value={connection.id} />
           <div className="flex gap-2">
             <label className="sr-only" htmlFor="message-body">

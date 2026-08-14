@@ -14,7 +14,7 @@ export function ProfileCard({ recommendation, actions }: ProfileCardProps) {
   const topSignal = profile.interests[0]?.name ?? profile.goals[0]?.title ?? profile.course ?? "Campus match";
 
   return (
-    <article className="interactive-card group rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+    <article className="interactive-card motion-rise group rounded-xl border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
       <div className="relative flex items-start gap-3 sm:gap-4">
         <ProfileAvatar src={profile.avatar_url} name={profile.full_name} size="md" />
         <div className="min-w-0 flex-1">

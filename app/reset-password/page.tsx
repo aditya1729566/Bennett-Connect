@@ -35,7 +35,7 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
   return (
     <PageShell>
       <main className="mx-auto flex min-h-[calc(100vh-64px)] max-w-md flex-col justify-center px-4 py-10">
-        <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-sm">
+        <div className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-6 shadow-sm backdrop-blur">
           <h1 className="text-3xl font-black text-zinc-950">Reset password</h1>
           <p className="mt-2 text-sm leading-6 text-zinc-600">Send a password reset link to your Bennett campus email.</p>
           <div className="mt-5">

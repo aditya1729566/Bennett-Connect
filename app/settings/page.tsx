@@ -34,7 +34,7 @@ export default async function SettingsPage() {
   return (
     <PageShell>
       <main className="mx-auto max-w-2xl px-3 py-5 sm:px-4 sm:py-8">
-        <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
+        <div className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
           <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Settings</p>
           <h1 className="mt-2 text-2xl font-black leading-tight text-zinc-950 sm:text-4xl">Account</h1>
         </div>
@@ -42,7 +42,7 @@ export default async function SettingsPage() {
           <SetupNotice />
         </div>
 
-        <section className="mt-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:mt-6 sm:p-5">
+        <section className="motion-rise mt-5 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:mt-6 sm:p-5">
           <h2 className="text-xl font-black text-zinc-950">Profile</h2>
           <p className="mt-2 text-sm text-zinc-600">{profile ? `${profile.full_name} • @${profile.username}` : user.email}</p>
           <div className="mt-4 flex flex-wrap gap-3">
@@ -61,14 +61,14 @@ export default async function SettingsPage() {
           <PushNotificationPrompt mode="settings" />
         </section>
 
-        <section className="mt-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+        <section className="motion-rise mt-5 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
           <h2 className="text-xl font-black text-zinc-950">Session</h2>
           <form action={logout} className="mt-4">
             <PendingSubmitButton pendingLabel="Logging out...">Log out</PendingSubmitButton>
           </form>
         </section>
 
-        <section className="mt-5 rounded-lg border border-red-200 bg-white p-4 shadow-sm sm:p-5">
+        <section className="motion-rise mt-5 rounded-lg border border-red-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
           <h2 className="text-xl font-black text-red-700">Delete account</h2>
           <div className="mt-4">
             <DeleteAccountForm action={deleteAccount} />

@@ -80,14 +80,14 @@ export default async function ConnectionsPage() {
   return (
     <PageShell>
       <main className="mx-auto max-w-4xl px-3 py-5 sm:px-4 sm:py-8">
-        <div className="mb-5 rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:mb-6 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
+        <div className="motion-rise mb-5 rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:mb-6 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
           <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Connections</p>
           <h1 className="mt-2 text-2xl font-black leading-tight text-zinc-950 sm:text-4xl">People who said yes.</h1>
           <p className="mt-3 text-sm leading-6 text-zinc-600 sm:text-base">Handle incoming requests and keep track of accepted campus connections.</p>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
-          <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+          <section className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
             <h2 className="text-xl font-black text-zinc-950">Received</h2>
             <div className="mt-4 space-y-3">
               {received.length > 0 ? (
@@ -118,14 +118,14 @@ export default async function ConnectionsPage() {
             </div>
           </section>
 
-          <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+          <section className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
             <h2 className="text-xl font-black text-zinc-950">Sent</h2>
             <div className="mt-4 space-y-3">
               {sent.length > 0 ? sent.map((row) => <PersonLine key={row.id} profile={row.receiver} />) : <Empty>No pending sent requests.</Empty>}
             </div>
           </section>
 
-          <section className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm sm:p-5">
+          <section className="motion-rise rounded-lg border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur sm:p-5">
             <h2 className="text-xl font-black text-zinc-950">Accepted</h2>
             <div className="mt-4 space-y-3">
               {accepted.length > 0

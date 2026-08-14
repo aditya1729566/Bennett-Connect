@@ -9,6 +9,8 @@
   --cyan: #0891b2;
   --mint: #059669;
   --coral: #f97316;
+  --pointer-x: 0;
+  --pointer-y: 0;
 }
 
 @theme inline {
@@ -21,6 +23,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  overflow-x: hidden;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   overscroll-behavior-y: none;
@@ -35,6 +38,10 @@ body {
     linear-gradient(135deg, rgba(8, 145, 178, 0.06), transparent 32rem),
     linear-gradient(225deg, rgba(5, 150, 105, 0.05), transparent 26rem),
     #f5f7fb;
+}
+
+.page-3d {
+  overflow-x: hidden;
 }
 
 button,
@@ -63,9 +70,39 @@ a {
     transform 150ms ease;
 }
 
+.page-3d header {
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.06);
+}
+
+.page-3d main {
+  transform-style: preserve-3d;
+}
+
 .interactive-card {
   position: relative;
   overflow: hidden;
+  transform-style: preserve-3d;
+  transform:
+    perspective(1200px)
+    rotateX(calc(var(--pointer-y) * -2deg))
+    rotateY(calc(var(--pointer-x) * 2deg))
+    translateZ(12px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.92) inset,
+    0 26px 70px rgba(15, 23, 42, 0.14),
+    0 10px 28px rgba(8, 145, 178, 0.1);
+}
+
+.interactive-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 14px -18px 14px;
+  height: 22px;
+  pointer-events: none;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.13);
+  filter: blur(18px);
+  transform: translateZ(-28px);
 }
 
 .interactive-card::before {
@@ -82,7 +119,46 @@ a {
 }
 
 .pressable:active {
-  transform: scale(0.98);
+  transform: translateY(1px) translateZ(-8px) scale(0.98);
+}
+
+.motion-rise {
+  opacity: 1;
+  transform: translateY(0) translateZ(0) rotateX(0);
+  transition:
+    opacity 520ms ease,
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.motion-ready .motion-rise {
+  opacity: 0;
+  transform: translateY(24px) translateZ(-18px) rotateX(5deg);
+}
+
+.motion-rise.is-visible {
+  opacity: 1;
+  transform: translateY(0) translateZ(0) rotateX(0);
+}
+
+.page-3d :is(article, aside > div, section > .rounded-lg, section > .rounded-xl, section > .rounded-2xl, form.rounded-lg, form.rounded-2xl, .rounded-xl.border, .rounded-lg.border) {
+  transform-style: preserve-3d;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85) inset,
+    0 20px 52px rgba(15, 23, 42, 0.1);
+}
+
+.page-3d :is(input, select, textarea) {
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.page-3d :is(input, select, textarea):focus {
+  box-shadow:
+    0 0 0 4px rgba(8, 145, 178, 0.12),
+    0 18px 38px rgba(8, 145, 178, 0.12);
+  transform: translateY(-1px);
 }
 
 .skeleton {
@@ -108,6 +184,12 @@ a {
   display: none;
 }
 
+.campus-signal-scene {
+  position: fixed;
+  inset: 0;
+  height: 100svh;
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
@@ -126,20 +208,47 @@ a {
 
 @media (hover: hover) {
   .interactive-card:hover {
-    transform: translateY(-3px);
+    transform:
+      perspective(1200px)
+      translateY(-7px)
+      rotateX(calc(var(--pointer-y) * -2deg))
+      rotateY(calc(var(--pointer-x) * 2deg))
+      translateZ(18px);
     border-color: rgba(8, 145, 178, 0.24);
-    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.95) inset,
+      0 28px 70px rgba(15, 23, 42, 0.16),
+      0 16px 34px rgba(8, 145, 178, 0.1);
   }
 
   .interactive-card:hover::before {
     opacity: 1;
     transform: translateX(32%);
   }
+
+  .page-3d :is(a, button):hover {
+    transform: translateY(-1px);
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .campus-signal-scene {
+    display: none;
+  }
+
+  .motion-rise,
+  .motion-rise.is-visible,
+  .interactive-card,
+  .interactive-card:hover {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 

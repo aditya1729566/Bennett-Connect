@@ -21,7 +21,7 @@ export function PendingSubmitButton({ children, pendingLabel = "Working...", var
   return (
     <button
       disabled={pending}
-      className={`pressable inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-black disabled:cursor-wait disabled:opacity-70 ${variantClass} ${className}`}
+      className={`pressable inline-flex items-center justify-center rounded-full px-4 py-3 text-sm font-black shadow-[0_12px_28px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.22)] disabled:cursor-wait disabled:opacity-70 ${variantClass} ${className}`}
     >
       {pending ? pendingLabel : children}
     </button>

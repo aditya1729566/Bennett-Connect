@@ -52,10 +52,11 @@ export default async function Home() {
 
   return (
     <PageShell>
-      <main className="mx-auto grid min-h-[calc(100vh-56px)] max-w-6xl items-center gap-6 px-3 py-6 sm:px-4 sm:py-10 md:min-h-[calc(100vh-64px)] md:grid-cols-[1fr_0.9fr] md:gap-10 md:py-16">
-        <section>
+      <main className="relative isolate min-h-[calc(100vh-56px)] overflow-hidden md:min-h-[calc(100vh-64px)]">
+        <div className="mx-auto grid min-h-[calc(100vh-56px)] max-w-6xl items-center gap-6 px-3 py-6 sm:px-4 sm:py-10 md:min-h-[calc(100vh-64px)] md:grid-cols-[1fr_0.9fr] md:gap-10 md:py-16">
+        <section className="motion-rise relative z-30">
           <p className="text-xs font-black uppercase tracking-wide text-cyan-700 sm:text-sm">Bennett Connect</p>
-          <h1 className="mt-4 max-w-3xl text-4xl font-black leading-[1.04] text-zinc-950 sm:text-6xl">
+          <h1 className="mt-4 max-w-[calc(100vw-1.5rem)] break-words text-[2.2rem] font-black leading-[1.05] text-zinc-950 sm:max-w-3xl sm:text-6xl">
             Find the people on campus you should know.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-700 sm:mt-5 sm:text-lg sm:leading-8">
@@ -70,22 +71,22 @@ export default async function Home() {
             </Link>
           </div>
           <div className="mt-6 grid gap-3 text-sm text-zinc-700 sm:mt-10 sm:grid-cols-3">
-            <div className="interactive-card rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div className="interactive-card rounded-xl border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur">
               <p className="font-black text-zinc-950">Discovery first</p>
               <p className="mt-1">Recommendations explain why someone is worth meeting.</p>
             </div>
-            <div className="interactive-card rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div className="interactive-card rounded-xl border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur">
               <p className="font-black text-zinc-950">Campus trust</p>
               <p className="mt-1">Built around verified university profiles and privacy.</p>
             </div>
-            <div className="interactive-card rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div className="interactive-card rounded-xl border border-zinc-200 bg-white/92 p-4 shadow-sm backdrop-blur">
               <p className="font-black text-zinc-950">Useful requests</p>
               <p className="mt-1">Find teammates, practice partners, builders, and collaborators.</p>
             </div>
           </div>
         </section>
 
-        <div className="interactive-card rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm sm:p-5">
+        <div className="interactive-card motion-rise relative z-30 rounded-2xl border border-zinc-200 bg-white/90 p-3 shadow-sm backdrop-blur sm:p-5">
           <div className="relative flex min-h-[34rem] flex-col overflow-hidden rounded-xl border border-zinc-200 bg-gradient-to-br from-white via-cyan-50/70 to-emerald-50/80 p-5 text-zinc-950 sm:min-h-[36rem]">
             <div className="flex items-center justify-between">
               <span className="rounded-full border border-cyan-200 bg-white/70 px-3 py-1 text-xs font-black uppercase tracking-wide text-cyan-800">Featured profile</span>
@@ -122,6 +123,7 @@ export default async function Home() {
               </Link>
             </div>
           </div>
+        </div>
         </div>
       </main>
     </PageShell>
