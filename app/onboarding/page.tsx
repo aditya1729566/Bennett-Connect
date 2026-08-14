@@ -163,12 +163,12 @@ export default async function OnboardingPage({ searchParams }: { searchParams?: 
               <input name="linkedin_url" placeholder="https://linkedin.com/in/..." defaultValue={profile?.linkedin_url ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
-              Instagram
-              <input name="instagram_url" placeholder="https://instagram.com/..." defaultValue={profile?.instagram_url ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              Instagram username
+              <input name="instagram_url" placeholder="username" defaultValue={profile?.instagram_url?.replace(/^@+/, "") ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
-              X
-              <input name="x_url" placeholder="https://x.com/..." defaultValue={profile?.x_url ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
+              X username
+              <input name="x_url" placeholder="username" defaultValue={profile?.x_url?.replace(/^@+/, "") ?? ""} className="mt-2 w-full rounded-lg border border-zinc-300 px-4 py-3 outline-none focus:border-cyan-600" />
             </label>
             <label className="block text-sm font-bold text-zinc-700">
               Codeforces

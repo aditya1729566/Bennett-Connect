@@ -15,6 +15,22 @@ const genderOptions = new Set(["male", "female", "non_binary", "prefer_not_to_sa
 const allowedCourses = new Set<string>(courseOptions);
 const allowedHostels = new Set<string>(hostelOptions);
 
+function normalizeSocialHandle(value: FormDataEntryValue | null) {
+  const input = String(value ?? "").trim();
+  if (!input) {
+    return null;
+  }
+
+  const withoutAt = input.replace(/^@+/, "");
+  try {
+    const parsed = new URL(withoutAt.startsWith("http") ? withoutAt : `https://${withoutAt}`);
+    const [handle] = parsed.pathname.split("/").filter(Boolean);
+    return handle?.replace(/^@+/, "") || null;
+  } catch {
+    return withoutAt.split("/").filter(Boolean).pop()?.split("?")[0] || null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   const user = await getUser();
 
@@ -95,8 +111,8 @@ export async function POST(request: NextRequest) {
     bio: String(formData.get("bio") ?? "").trim() || null,
     github_url: String(formData.get("github_url") ?? "").trim() || null,
     linkedin_url: String(formData.get("linkedin_url") ?? "").trim() || null,
-    instagram_url: String(formData.get("instagram_url") ?? "").trim() || null,
-    x_url: String(formData.get("x_url") ?? "").trim() || null,
+    instagram_url: normalizeSocialHandle(formData.get("instagram_url")),
+    x_url: normalizeSocialHandle(formData.get("x_url")),
     codeforces_handle: String(formData.get("codeforces_handle") ?? "").trim() || null,
   });
 

@@ -62,6 +62,24 @@ function SocialIconLink({ href, label, kind }: { href: string; label: string; ki
   );
 }
 
+function socialProfileUrl(platform: "instagram" | "x", handleOrUrl: string | null) {
+  const value = handleOrUrl?.trim();
+  if (!value) {
+    return null;
+  }
+
+  if (value.startsWith("http://") || value.startsWith("https://")) {
+    return value;
+  }
+
+  const handle = value.replace(/^@+/, "").split("/").filter(Boolean).pop();
+  if (!handle) {
+    return null;
+  }
+
+  return platform === "instagram" ? `https://instagram.com/${handle}` : `https://x.com/${handle}`;
+}
+
 async function connect(formData: FormData) {
   "use server";
 
@@ -170,6 +188,8 @@ export default async function ProfilePage({
   const profileMeta = [profile.course, profile.year_of_study ?? profile.graduation_year, showLocation ? (profile.residence_type === "day_scholar" ? "Day scholar" : profile.hostel) : null]
     .filter(Boolean)
     .join(" • ");
+  const instagramUrl = socialProfileUrl("instagram", profile.instagram_url);
+  const xUrl = socialProfileUrl("x", profile.x_url);
 
   return (
     <PageShell>
@@ -216,12 +236,12 @@ export default async function ProfilePage({
             </div>
           </div>
 
-          {profile.github_url || profile.linkedin_url || profile.instagram_url || profile.x_url || profile.codeforces_handle ? (
+          {profile.github_url || profile.linkedin_url || instagramUrl || xUrl || profile.codeforces_handle ? (
             <div className="mt-6 flex flex-wrap gap-3">
               {profile.github_url ? <SocialIconLink href={profile.github_url} label="Open GitHub profile" kind="github" /> : null}
               {profile.linkedin_url ? <SocialIconLink href={profile.linkedin_url} label="Open LinkedIn profile" kind="linkedin" /> : null}
-              {profile.instagram_url ? <SocialIconLink href={profile.instagram_url} label="Open Instagram profile" kind="instagram" /> : null}
-              {profile.x_url ? <SocialIconLink href={profile.x_url} label="Open X profile" kind="x" /> : null}
+              {instagramUrl ? <SocialIconLink href={instagramUrl} label="Open Instagram profile" kind="instagram" /> : null}
+              {xUrl ? <SocialIconLink href={xUrl} label="Open X profile" kind="x" /> : null}
               {profile.codeforces_handle ? <SocialIconLink href={`https://codeforces.com/profile/${profile.codeforces_handle}`} label="Open Codeforces profile" kind="codeforces" /> : null}
             </div>
           ) : null}
