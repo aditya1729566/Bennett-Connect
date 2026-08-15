@@ -6,7 +6,7 @@ import { createAdminClient, createClient, getUser } from "@/lib/supabase/server"
 import type { Profile } from "@/types/domain";
 
 const FEATURED_USERNAME = "anarchistgovernor";
-const FEATURED_WEBSITE = "https://personal-website-bay-omega.vercel.app";
+const FEATURED_WEBSITE = "https://adityaag.com";
 const FALLBACK_FEATURED_PROFILE = {
   full_name: "Aditya Agrawal",
   avatar_url: null,

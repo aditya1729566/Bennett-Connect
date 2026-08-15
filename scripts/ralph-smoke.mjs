@@ -51,7 +51,7 @@ const landing = read("app/page.tsx");
 check("landing features Aditya", landing.includes("Aditya Agrawal"));
 check("landing has Aditya username", landing.includes('FEATURED_USERNAME = "anarchistgovernor"'));
 check("landing builds profile link", landing.includes("`/profile/${FEATURED_USERNAME}`"));
-check("landing links Aditya website", landing.includes("https://personal-website-bay-omega.vercel.app"));
+check("landing links Aditya website", landing.includes("https://adityaag.com"));
 check("landing has working profile CTA", landing.includes("View profile"));
 check("landing removed old decorative signal", !landing.includes("connect signal"));
 
